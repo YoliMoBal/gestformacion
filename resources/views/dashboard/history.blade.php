@@ -14,7 +14,7 @@
         @else
             <ul class="list-disc ml-6">
                 @foreach($completedAssignments as $a)
-                    <li>{{ $a->course->title }}</li>
+                    <li>{{ $a->courseCall->course->title }}</li>
                 @endforeach
             </ul>
         @endif

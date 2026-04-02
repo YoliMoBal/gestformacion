@@ -37,7 +37,7 @@
                     @foreach($pendingAssignments as $a)
                         <tr>
                             <td class="border p-2">{{ $a->user->name }}</td>
-                            <td class="border p-2">{{ $a->courseCall->title }}</td>
+                            <td class="border p-2">{{ $a->courseCall->course->title }}</td>
                             <td class="border p-2 text-red-600 font-bold">
                                 {{ $a->courseCall->end_date }}
                             </td>
@@ -71,10 +71,8 @@
                     @foreach($completedAssignments as $a)
                         <tr>
                             <td class="border p-2">{{ $a->user->name }}</td>
-                            <td class="border p-2">{{ $a->course->title }}</td>
-                            <td class="border p-2">
-                                {{ $a->course->end_date }}
-                            </td>
+                            <td class="border p-2">{{ $a->courseCall->course->title }}</td>
+                            <td class="border p-2">{{ $a->courseCall->end_date }}</td>
                             <td class="border p-2 text-green-600 font-bold">
                                 Completado
                             </td>

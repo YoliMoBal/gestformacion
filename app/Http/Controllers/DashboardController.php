@@ -9,7 +9,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $pendingAssignments = CourseAssignment::with('course')
+        $pendingAssignments = CourseAssignment::with('courseCall.course')
             ->where('user_id', auth()->id())
             ->where('status', '!=', 'completed')
             ->get();
@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
     public function history()
     {
-        $completedAssignments = CourseAssignment::with('course')
+        $completedAssignments = CourseAssignment::with('courseCall.course')
             ->where('user_id', auth()->id())
             ->where('status', 'completed')
             ->get();
