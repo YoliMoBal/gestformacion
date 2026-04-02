@@ -26,6 +26,7 @@ class SendCourseNotifications extends Command
                     $query->whereDate('end_date', $targetDate);
                 })
                 ->where('status', '!=', 'completed')
+                ->where("notified_{$days}_days", false)
                 ->with(['user', 'courseCall.course'])
                 ->get();
 
@@ -36,6 +37,8 @@ class SendCourseNotifications extends Command
                     $assignment->user->notify(
                         new CourseDeadlineNotification($assignment->courseCall)
                     );
+
+                    $assignment->update(["notified_{$days}_days" => true]);
                 }
             }
         }

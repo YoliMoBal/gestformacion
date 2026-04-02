@@ -33,10 +33,7 @@ class Kernel extends ConsoleKernel
         // ⚠️ ESTO ES LO QUE FALTABA
         require base_path('routes/console.php');
     }
-    protected $middlewareAliases = [
-    'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-    'admin' => \App\Http\Middleware\AdminMiddleware::class,
-];
+    
 
 }
 
