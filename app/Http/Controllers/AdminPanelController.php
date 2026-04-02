@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\CourseAssignment;
+use App\Models\User;
+use App\Models\Ubicacion;
+use App\Models\Departamento;
+use App\Models\PerfilEmpleado;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
+class AdminPanelController extends Controller
+{
+    public function index()
+    {
+        $limitDate = Carbon::now()->addDays(7);
+        $userId = request('user_id'); // para futuros filtros
+
+        // 🟡 Cursos pendientes (próximos a caducar)
+        $pendingAssignments = CourseAssignment::with(['user', 'courseCall.course'])
+            ->where('status', '!=', 'completed')
+            ->when($userId, function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->get();
+
+
+        // 🟢 Histórico de cursos completados
+        $completedAssignments = CourseAssignment::with(['user', 'courseCall.course'])
+            ->where('status', 'completed')
+            ->when($userId, function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->orderByDesc('updated_at')
+            ->get();
+
+        return view('admin.panel', compact(
+            'pendingAssignments',
+            'completedAssignments'
+        ));
+    }
+
+    // ===============================
+    // 🧾 FORMULARIO ALTA EMPLEADO
+    // ===============================
+
+    public function createEmpleado()
+    {
+        return view('admin.empleados.create', [
+            'ubicaciones' => Ubicacion::with('codigosConcesionario')->get(),
+            'departamentos' => Departamento::with('puestos')->get(),
+        ]);
+    }
+
+    public function storeEmpleado(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'dni' => 'required|string|unique:users',
+            'password' => 'required|min:6',
+            'codigo_concesionario_id' => 'required|exists:codigos_concesionario,id',
+            'departamento_id' => 'required|exists:departamentos,id',
+            'puesto_id' => 'required|exists:puestos,id',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'dni' => $request->dni,
+            'password' => Hash::make($request->password),
+            'active' => true,
+        ]);
+
+        PerfilEmpleado::create([
+            'user_id' => $user->id,
+            'codigo_concesionario_id' => $request->codigo_concesionario_id,
+            'departamento_id' => $request->departamento_id,
+            'puesto_id' => $request->puesto_id,
+        ]);
+
+        return redirect()
+            ->route('admin.empleados.create')
+            ->with('success', 'Empleado creado correctamente');
+    }
+}
+
