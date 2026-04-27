@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 
@@ -14,23 +13,23 @@
         <div>
             <label class="block text-sm mb-1">Buscar usuario</label>
             <input type="text"
-                   name="search"
-                   value="{{ request('search') }}"
-                   placeholder="Nombre o email"
-                   class="border p-2 rounded w-64">
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Nombre o email"
+                class="border p-2 rounded w-64">
         </div>
 
         <!-- Concesionario -->
         <div style="min-width: 320px">
             <label class="block text-sm mb-1">Concesionario</label>
             <select name="codigo_concesionario_id"
-                    class="border p-2 rounded w-full">
+                class="border p-2 rounded w-full">
                 <option value="">Todos</option>
                 @foreach($concesionarios as $concesionario)
-                    <option value="{{ $concesionario->id }}"
-                        {{ request('codigo_concesionario_id') == $concesionario->id ? 'selected' : '' }}>
-                        {{ $concesionario->codigo }} – {{ $concesionario->ubicacion->nombre }}
-                    </option>
+                <option value="{{ $concesionario->id }}"
+                    {{ request('codigo_concesionario_id') == $concesionario->id ? 'selected' : '' }}>
+                    {{ $concesionario->codigo }} – {{ $concesionario->ubicacion->nombre }}
+                </option>
                 @endforeach
             </select>
         </div>
@@ -39,13 +38,13 @@
         <div>
             <label class="block text-sm mb-1">Puesto</label>
             <select name="puesto_id"
-                    class="border p-2 rounded w-64">
+                class="border p-2 rounded w-64">
                 <option value="">Todos</option>
                 @foreach($puestos as $puesto)
-                    <option value="{{ $puesto->id }}"
-                        {{ request('puesto_id') == $puesto->id ? 'selected' : '' }}>
-                        {{ $puesto->nombre }}
-                    </option>
+                <option value="{{ $puesto->id }}"
+                    {{ request('puesto_id') == $puesto->id ? 'selected' : '' }}>
+                    {{ $puesto->nombre }}
+                </option>
                 @endforeach
             </select>
         </div>
@@ -62,7 +61,7 @@
     <!-- BLOQUE EXPORTACIÓN -->
     <div class="flex gap-2">
         <a href="{{ route('users.export.csv', request()->query()) }}"
-           style="
+            style="
                background-color:#16a34a;
                color:white;
                display:inline-flex;
@@ -76,7 +75,7 @@
         </a>
 
         <a href="{{ route('users.export.excel', request()->query()) }}"
-           style="
+            style="
                background-color:#2563eb;
                color:white;
                display:inline-flex;
@@ -95,19 +94,19 @@
 
 
 @if ($users->total() > 0)
-    <div class="mb-2 text-sm text-gray-600">
-        Mostrando
-        <strong>{{ $users->firstItem() }}</strong>
-        –
-        <strong>{{ $users->lastItem() }}</strong>
-        de
-        <strong>{{ $users->total() }}</strong>
-        usuarios
-    </div>
+<div class="mb-2 text-sm text-gray-600">
+    Mostrando
+    <strong>{{ $users->firstItem() }}</strong>
+    –
+    <strong>{{ $users->lastItem() }}</strong>
+    de
+    <strong>{{ $users->total() }}</strong>
+    usuarios
+</div>
 @else
-    <div class="mb-2 text-sm text-gray-600">
-        No hay usuarios para los filtros seleccionados
-    </div>
+<div class="mb-2 text-sm text-gray-600">
+    No hay usuarios para los filtros seleccionados
+</div>
 @endif
 
 
@@ -122,6 +121,7 @@
             <th class="p-2 border">Ubicación</th>
             <th class="p-2 border">Departamento</th>
             <th class="p-2 border">Puesto</th>
+            <th class="p-2 border">Estado</th>
             <th class="p-2 border">Acciones</th>
         </tr>
     </thead>
@@ -147,16 +147,30 @@
             <td class="p-2 border">
                 {{ $user->perfilEmpleado?->puesto?->nombre ?? '-' }}
             </td>
-
             <td class="p-2 border">
+                <span class="{{ $user->active ? 'text-green-600' : 'text-red-500' }} font-semibold">
+                    {{ $user->active ? 'Activo' : 'Inactivo' }}
+                </span>
+            </td>
+            <td class="p-2 border">
+
                 <a href="{{ route('users.edit', $user->id) }}" class="bg-yellow-400 px-2 py-1 rounded">Editar</a>
+
+                <form action="{{ route('users.toggleActive', $user->id) }}" method="POST" style="display:inline">
+                    @csrf
+                    @method('PATCH')
+                    <button class="{{ $user->active ? 'bg-gray-400' : 'bg-green-500' }} px-2 py-1 rounded text-white">
+                        {{ $user->active ? 'Desactivar' : 'Activar' }}
+                    </button>
+                </form>
+
                 <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline">
                     @csrf
                     @method('DELETE')
-                <button class="bg-red-500 px-2 py-1 rounded text-white"
-                    onclick="return confirm('¿Eliminar usuario?')">
-                    Eliminar
-                </button>
+                    <button class="bg-red-500 px-2 py-1 rounded text-white"
+                        onclick="return confirm('¿Eliminar usuario?')">
+                        Eliminar
+                    </button>
                 </form>
             </td>
 

@@ -65,6 +65,9 @@ Route::prefix('admin')
         // =====================
         Route::resource('users', UserController::class);
 
+        Route::patch('users/{id}/toggle-active', [UserController::class, 'toggleActive'])
+        ->name('users.toggleActive');
+        
         Route::get('users/export/csv', [UserController::class, 'exportCsv'])
             ->name('users.export.csv');
 

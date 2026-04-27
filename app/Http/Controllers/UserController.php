@@ -14,61 +14,61 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
-public function index(Request $request)
-{
-    $query = User::with([
-        'perfilEmpleado.codigoConcesionario.ubicacion',
-        'perfilEmpleado.departamento',
-        'perfilEmpleado.puesto',
-    ]);
+    public function index(Request $request)
+    {
+        $query = User::with([
+            'perfilEmpleado.codigoConcesionario.ubicacion',
+            'perfilEmpleado.departamento',
+            'perfilEmpleado.puesto',
+        ]);
 
-    // 🔎 Búsqueda por nombre o email
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
-        });
+        // 🔎 Búsqueda por nombre o email
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // 🏬 Filtro por concesionario
+        if ($request->filled('codigo_concesionario_id')) {
+            $query->whereHas('perfilEmpleado', function ($q) use ($request) {
+                $q->where('codigo_concesionario_id', $request->codigo_concesionario_id);
+            });
+        }
+
+        // 🏢 Filtro por departamento
+        if ($request->filled('departamento_id')) {
+            $query->whereHas('perfilEmpleado', function ($q) use ($request) {
+                $q->where('departamento_id', $request->departamento_id);
+            });
+        }
+
+        // 🧑‍🔧 Filtro por puesto
+        if ($request->filled('puesto_id')) {
+            $query->whereHas('perfilEmpleado', function ($q) use ($request) {
+                $q->where('puesto_id', $request->puesto_id);
+            });
+        }
+
+
+        // 📄 Paginación (mantiene filtros)
+        $users = $query->paginate(10)->withQueryString();
+
+        // Datos para los filtros
+        $concesionarios = \App\Models\CodigoConcesionario::with('ubicacion')->get();
+        $departamentos  = \App\Models\Departamento::orderBy('nombre')->get();
+        $puestos = \App\Models\Puesto::orderBy('nombre')->get();
+
+
+        return view('admin.users.index', compact(
+            'users',
+            'concesionarios',
+            'departamentos',
+            'puestos'
+        ));
     }
-
-    // 🏬 Filtro por concesionario
-    if ($request->filled('codigo_concesionario_id')) {
-        $query->whereHas('perfilEmpleado', function ($q) use ($request) {
-            $q->where('codigo_concesionario_id', $request->codigo_concesionario_id);
-        });
-    }
-
-    // 🏢 Filtro por departamento
-    if ($request->filled('departamento_id')) {
-        $query->whereHas('perfilEmpleado', function ($q) use ($request) {
-            $q->where('departamento_id', $request->departamento_id);
-        });
-    }
-
-    // 🧑‍🔧 Filtro por puesto
-    if ($request->filled('puesto_id')) {
-        $query->whereHas('perfilEmpleado', function ($q) use ($request) {
-        $q->where('puesto_id', $request->puesto_id);
-        });
-    }
-
-
-    // 📄 Paginación (mantiene filtros)
-    $users = $query->paginate(10)->withQueryString();
-
-    // Datos para los filtros
-    $concesionarios = \App\Models\CodigoConcesionario::with('ubicacion')->get();
-    $departamentos  = \App\Models\Departamento::orderBy('nombre')->get();
-    $puestos = \App\Models\Puesto::orderBy('nombre')->get();
-
-
-    return view('admin.users.index', compact(
-        'users',
-        'concesionarios',
-        'departamentos',
-        'puestos'
-    ));
-}
 
 
 
@@ -164,6 +164,18 @@ public function index(Request $request)
             ->with('success', 'Usuario eliminado correctamente');
     }
 
+    public function toggleActive(string $id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['active' => !$user->active]);
+
+        $estado = $user->active ? 'activado' : 'desactivado';
+
+        return redirect()
+            ->route('users.index')
+            ->with('success', "Usuario {$estado} correctamente");
+    }
+
     public function exportExcel(Request $request)
     {
         return Excel::download(
@@ -175,84 +187,83 @@ public function index(Request $request)
 
     public function exportCsv(Request $request)
     {
-    $query = User::with([
-        'perfilEmpleado.codigoConcesionario.ubicacion',
-        'perfilEmpleado.departamento',
-        'perfilEmpleado.puesto',
-    ]);
+        $query = User::with([
+            'perfilEmpleado.codigoConcesionario.ubicacion',
+            'perfilEmpleado.departamento',
+            'perfilEmpleado.puesto',
+        ]);
 
-    // 🔍 Búsqueda
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
-        });
-    }
-
-    // 🏬 Concesionario
-    if ($request->filled('codigo_concesionario_id')) {
-        $query->whereHas('perfilEmpleado', function ($q) use ($request) {
-            $q->where('codigo_concesionario_id', $request->codigo_concesionario_id);
-        });
-    }
-
-    // 🏢 Departamento
-    if ($request->filled('departamento_id')) {
-        $query->whereHas('perfilEmpleado', function ($q) use ($request) {
-            $q->where('departamento_id', $request->departamento_id);
-        });
-    }
-
-    // 🧑‍🔧 Puesto
-    if ($request->filled('puesto_id')) {
-        $query->whereHas('perfilEmpleado', function ($q) use ($request) {
-            $q->where('puesto_id', $request->puesto_id);
-        });
-    }
-
-    $users = $query->get();
-
-    $filename = 'usuarios_' . now()->format('Ymd_His') . '.csv';
-
-    $headers = [
-        'Content-Type' => 'text/csv; charset=UTF-8',
-        'Content-Disposition' => "attachment; filename={$filename}",
-    ];
-
-    $callback = function () use ($users) {
-        $file = fopen('php://output', 'w');
-
-        // BOM para Excel (acentos)
-        fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-
-        // Cabecera CSV
-        fputcsv($file, [
-            'Nombre',
-            'Email',
-            'Rol',
-            'Código concesión',
-            'Ubicación',
-            'Departamento',
-            'Puesto',
-        ], ';');
-
-        foreach ($users as $user) {
-            fputcsv($file, [
-                $user->name,
-                $user->email,
-                $user->role,
-                $user->perfilEmpleado?->codigoConcesionario?->codigo ?? '',
-                $user->perfilEmpleado?->codigoConcesionario?->ubicacion?->nombre ?? '',
-                $user->perfilEmpleado?->departamento?->nombre ?? '',
-                $user->perfilEmpleado?->puesto?->nombre ?? '',
-            ], ';');
+        // 🔍 Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
         }
 
-        fclose($file);
-    };
+        // 🏬 Concesionario
+        if ($request->filled('codigo_concesionario_id')) {
+            $query->whereHas('perfilEmpleado', function ($q) use ($request) {
+                $q->where('codigo_concesionario_id', $request->codigo_concesionario_id);
+            });
+        }
 
-    return response()->stream($callback, 200, $headers);
-}
+        // 🏢 Departamento
+        if ($request->filled('departamento_id')) {
+            $query->whereHas('perfilEmpleado', function ($q) use ($request) {
+                $q->where('departamento_id', $request->departamento_id);
+            });
+        }
 
+        // 🧑‍🔧 Puesto
+        if ($request->filled('puesto_id')) {
+            $query->whereHas('perfilEmpleado', function ($q) use ($request) {
+                $q->where('puesto_id', $request->puesto_id);
+            });
+        }
+
+        $users = $query->get();
+
+        $filename = 'usuarios_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ];
+
+        $callback = function () use ($users) {
+            $file = fopen('php://output', 'w');
+
+            // BOM para Excel (acentos)
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Cabecera CSV
+            fputcsv($file, [
+                'Nombre',
+                'Email',
+                'Rol',
+                'Código concesión',
+                'Ubicación',
+                'Departamento',
+                'Puesto',
+            ], ';');
+
+            foreach ($users as $user) {
+                fputcsv($file, [
+                    $user->name,
+                    $user->email,
+                    $user->role,
+                    $user->perfilEmpleado?->codigoConcesionario?->codigo ?? '',
+                    $user->perfilEmpleado?->codigoConcesionario?->ubicacion?->nombre ?? '',
+                    $user->perfilEmpleado?->departamento?->nombre ?? '',
+                    $user->perfilEmpleado?->puesto?->nombre ?? '',
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
