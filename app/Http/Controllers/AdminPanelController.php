@@ -13,32 +13,39 @@ use Carbon\Carbon;
 
 class AdminPanelController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $limitDate = Carbon::now()->addDays(7);
-        $userId = request('user_id'); // para futuros filtros
+        $userId = $request->user_id;
+        $status = $request->status;
+        $search = $request->search;
 
-        // 🟡 Cursos pendientes (próximos a caducar)
+        // 🟡 Cursos pendientes
         $pendingAssignments = CourseAssignment::with(['user', 'courseCall.course'])
             ->where('status', '!=', 'completed')
-            ->when($userId, function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
-        ->get();
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
+            $q2->where('name', 'like', "%{$search}%")))
+            ->get();
 
-
-        // 🟢 Histórico de cursos completados
+        // 🟢 Histórico completados
         $completedAssignments = CourseAssignment::with(['user', 'courseCall.course'])
             ->where('status', 'completed')
-            ->when($userId, function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
+            $q2->where('name', 'like', "%{$search}%")))
             ->orderByDesc('updated_at')
+            ->get();
+
+        // Usuarios para el filtro
+        $users = User::where('role', 'employee')
+            ->where('active', true)
+            ->orderBy('name')
             ->get();
 
         return view('admin.panel', compact(
             'pendingAssignments',
-            'completedAssignments'
+            'completedAssignments',
+            'users'
         ));
     }
 
@@ -86,4 +93,3 @@ class AdminPanelController extends Controller
             ->with('success', 'Empleado creado correctamente');
     }
 }
-
