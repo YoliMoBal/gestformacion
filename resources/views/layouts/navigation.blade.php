@@ -7,51 +7,63 @@
             <div class="flex space-x-8">
 
                 @auth
-                    {{-- MENÚ ADMIN --}}
-                    @if(auth()->user()->role === 'admin')
-                        <x-nav-link :href="route('admin.panel')" :active="request()->routeIs('admin.panel')">
-                            Panel
-                        </x-nav-link>
+                {{-- MENÚ ADMIN --}}
+                @if(auth()->user()->role === 'admin')
+                <x-nav-link :href="route('admin.panel')" :active="request()->routeIs('admin.panel')">
+                    Panel
+                </x-nav-link>
 
-                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                            Usuarios
-                        </x-nav-link>
+                <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                    Usuarios
+                </x-nav-link>
 
-                        <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
-                            Cursos
-                        </x-nav-link>
+                <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
+                    Cursos
+                </x-nav-link>
 
-                        <x-nav-link :href="route('course-calls.index')" :active="request()->routeIs('course-calls.*')">
-                            Convocatorias
-                        </x-nav-link>
+                <x-nav-link :href="route('course-calls.index')" :active="request()->routeIs('course-calls.*')">
+                    Convocatorias
+                </x-nav-link>
 
-                        <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')">
-                            Asignaciones
-                        </x-nav-link>
+                <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')">
+                    Asignaciones
+                </x-nav-link>
 
-                        <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
-                            Notificaciones
-                            @if(auth()->user()->unreadNotifications->count())
-                                <span class="ml-1 inline-flex items-center justify-center
+                <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                    Notificaciones
+                    @if(auth()->user()->unreadNotifications->count())
+                    <span class="ml-1 inline-flex items-center justify-center
                                     text-xs font-bold text-white bg-red-500 rounded-full px-2">
-                                    {{ auth()->user()->unreadNotifications->count() }}
-                                </span>
-                            @endif
-                        </x-nav-link>
-
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            Mis cursos
-                        </x-nav-link>
-
-                    @else
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        Mis cursos
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('dashboard.history')" :active="request()->routeIs('dashboard.history')">
-                        Histórico
-                    </x-nav-link>
+                        {{ auth()->user()->unreadNotifications->count() }}
+                    </span>
                     @endif
+                </x-nav-link>
+
+                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    Mis cursos
+                </x-nav-link>
+
+                @else
+                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    Mis cursos
+                    @php
+                    $cursosUrgentes = \App\Models\CourseAssignment::where('user_id', auth()->id())
+                    ->where('status', '!=', 'completed')
+                    ->whereHas('courseCall', fn($q) => $q->whereDate('end_date', '<=', now()->addDays(7)))
+                        ->count();
+                        @endphp
+                        @if($cursosUrgentes > 0)
+                        <span class="ml-1 inline-flex items-center justify-center
+            text-xs font-bold text-white bg-red-500 rounded-full px-2">
+                            {{ $cursosUrgentes }}
+                        </span>
+                        @endif
+                </x-nav-link>
+
+                <x-nav-link :href="route('dashboard.history')" :active="request()->routeIs('dashboard.history')">
+                    Histórico
+                </x-nav-link>
+                @endif
 
                 @endauth
 
@@ -93,11 +105,11 @@
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }"
-                              class="inline-flex" stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            class="inline-flex" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }"
-                              class="hidden" stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            class="hidden" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -105,6 +117,5 @@
         </div>
     </div>
 
-    
-</nav>
 
+</nav>
