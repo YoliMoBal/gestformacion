@@ -19,15 +19,30 @@ class AdminPanelController extends Controller
         $status = $request->status;
         $search = $request->search;
 
-        // 🟡 Cursos pendientes
-        $pendingAssignments = CourseAssignment::with(['user', 'courseCall.course'])
+        // 🔴 Caducados — ya pasó la fecha y siguen sin completar
+        $expiredAssignments = CourseAssignment::with(['user', 'courseCall.course'])
             ->where('status', '!=', 'completed')
+            ->whereHas('courseCall', function ($q) {
+                $q->whereDate('end_date', '<', now());
+            })
             ->when($userId, fn($q) => $q->where('user_id', $userId))
             ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
             $q2->where('name', 'like', "%{$search}%")))
             ->get();
 
-        // 🟢 Histórico completados
+        // ⚠️ Próximos a caducar — vencen en los próximos 7 días
+        $pendingAssignments = CourseAssignment::with(['user', 'courseCall.course'])
+            ->where('status', '!=', 'completed')
+            ->whereHas('courseCall', function ($q) {
+                $q->whereDate('end_date', '>=', now())
+                    ->whereDate('end_date', '<=', now()->addDays(7));
+            })
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
+            $q2->where('name', 'like', "%{$search}%")))
+            ->get();
+
+        // ✅ Completados
         $completedAssignments = CourseAssignment::with(['user', 'courseCall.course'])
             ->where('status', 'completed')
             ->when($userId, fn($q) => $q->where('user_id', $userId))
@@ -36,7 +51,6 @@ class AdminPanelController extends Controller
             ->orderByDesc('updated_at')
             ->get();
 
-        // Usuarios para el filtro
         $users = User::where('role', 'employee')
             ->where('active', true)
             ->orderBy('name')
@@ -44,6 +58,7 @@ class AdminPanelController extends Controller
 
         return view('admin.panel', compact(
             'pendingAssignments',
+            'expiredAssignments',
             'completedAssignments',
             'users'
         ));

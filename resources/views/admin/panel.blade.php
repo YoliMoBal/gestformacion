@@ -1,120 +1,173 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto p-6">
 
-    <h1 class="text-2xl font-bold mb-6">Panel de Administración</h1>
+<h1 class="page-title"><i class="fas fa-chart-line me-2"></i>Panel de Administración</h1>
 
-    <!-- BOTÓN ENVÍO MANUAL -->
-    <form action="{{ route('admin.sendCourseNotifications') }}" method="POST" class="mb-6">
-        @csrf
-        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
-            🔔 Enviar notificaciones de vencimiento
-        </button>
-    </form>
-
-    <!-- FILTROS -->
-    <form method="GET" class="bg-white p-4 shadow rounded mb-6 flex gap-4 items-end flex-wrap">
-        <div>
-            <label class="block text-sm mb-1">Buscar empleado</label>
-            <input type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Nombre del empleado"
-                class="border p-2 rounded w-56">
-        </div>
-
-        <div>
-            <label class="block text-sm mb-1">Empleado</label>
-            <select name="user_id" class="border p-2 rounded w-56">
-                <option value="">Todos</option>
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}"
-                        {{ request('user_id') == $user->id ? 'selected' : '' }}>
-                        {{ $user->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <button class="bg-blue-500 text-white px-4 py-2 rounded h-[42px]">
-            Filtrar
-        </button>
-
-        <a href="{{ route('admin.panel') }}" class="text-sm underline">
-            Limpiar
-        </a>
-    </form>
-
-    <!-- CURSOS PRÓXIMOS A CADUCAR -->
-    <div class="bg-white p-4 shadow rounded mb-10">
-        <h2 class="text-lg font-semibold mb-4">
-            Cursos próximos a caducar (7 días)
-        </h2>
-
-        @if($pendingAssignments->isEmpty())
-            <p class="text-gray-600">No hay cursos próximos a caducar.</p>
-        @else
-            <table class="w-full border">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border p-2">Empleado</th>
-                        <th class="border p-2">Curso</th>
-                        <th class="border p-2">Fecha fin</th>
-                        <th class="border p-2">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($pendingAssignments as $a)
-                        <tr>
-                            <td class="border p-2">{{ $a->user->name }}</td>
-                            <td class="border p-2">{{ $a->courseCall->course->title }}</td>
-                            <td class="border p-2 text-red-600 font-bold">
-                                {{ $a->courseCall->end_date }}
-                            </td>
-                            <td class="border p-2">{{ $a->status }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
+<!-- BOTÓN ENVÍO -->
+<div class="row g-3 mb-4">
+    <div class="col-auto">
+        <form action="{{ route('admin.sendCourseNotifications') }}" method="POST">
+            @csrf
+            <button class="btn btn-primary">
+                <i class="fas fa-bell me-2"></i>Enviar notificaciones de vencimiento
+            </button>
+        </form>
     </div>
-
-    <!-- HISTÓRICO DE CURSOS COMPLETADOS -->
-    <div class="bg-white p-4 shadow rounded">
-        <h2 class="text-lg font-semibold mb-4">
-            Histórico de cursos completados
-        </h2>
-
-        @if($completedAssignments->isEmpty())
-            <p class="text-gray-600">No hay cursos completados.</p>
-        @else
-            <table class="w-full border">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border p-2">Empleado</th>
-                        <th class="border p-2">Curso</th>
-                        <th class="border p-2">Fecha fin</th>
-                        <th class="border p-2">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($completedAssignments as $a)
-                        <tr>
-                            <td class="border p-2">{{ $a->user->name }}</td>
-                            <td class="border p-2">{{ $a->courseCall->course->title }}</td>
-                            <td class="border p-2">{{ $a->courseCall->end_date }}</td>
-                            <td class="border p-2 text-green-600 font-bold">
-                                Completado
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-    </div>
-
 </div>
+
+<!-- FILTROS -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Buscar empleado</label>
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Nombre del empleado" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Empleado</label>
+                <select name="user_id" class="form-select">
+                    <option value="">Todos</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}"
+                            {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                            {{ $user->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i>Filtrar
+                </button>
+                <a href="{{ route('admin.panel') }}" class="btn btn-secondary ms-2">
+                    <i class="fas fa-times me-1"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- CURSOS PRÓXIMOS A CADUCAR -->
+<div class="card mb-4">
+    <div class="card-header-custom">
+        <i class="fas fa-exclamation-triangle me-2"></i>Cursos próximos a caducar (7 días)
+        <span class="badge bg-warning text-dark ms-2">{{ $pendingAssignments->count() }}</span>
+    </div>
+    <div class="card-body p-0">
+        @if($pendingAssignments->isEmpty())
+            <p class="text-muted p-4 mb-0"><i class="fas fa-check-circle me-2 text-success"></i>No hay cursos próximos a caducar.</p>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Curso</th>
+                            <th>Fecha fin</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($pendingAssignments as $a)
+                            <tr>
+                                <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
+                                <td>{{ $a->courseCall->course->title }}</td>
+                                <td><span class="text-danger fw-bold"><i class="fas fa-clock me-1"></i>{{ $a->courseCall->end_date }}</span></td>
+                                <td>
+                                    @if($a->status == 'pending')
+                                        <span class="badge-pending">Pendiente</span>
+                                    @else
+                                        <span class="badge-progress">En curso</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+
+<!-- HISTÓRICO COMPLETADOS -->
+<div class="card">
+    <div class="card-header-custom">
+        <i class="fas fa-history me-2"></i>Histórico de cursos completados
+        <span class="badge bg-success ms-2">{{ $completedAssignments->count() }}</span>
+    </div>
+    <div class="card-body p-0">
+        @if($completedAssignments->isEmpty())
+            <p class="text-muted p-4 mb-0">No hay cursos completados.</p>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Curso</th>
+                            <th>Fecha fin</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($completedAssignments as $a)
+                            <tr>
+                                <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
+                                <td>{{ $a->courseCall->course->title }}</td>
+                                <td>{{ $a->courseCall->end_date }}</td>
+                                <td><span class="badge-completed"><i class="fas fa-check me-1"></i>Completado</span></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+<!-- CURSOS CADUCADOS -->
+<div class="card mb-4">
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #7f1d1d, #dc2626);">
+        <i class="fas fa-times-circle me-2"></i>Cursos caducados sin completar
+        <span class="badge bg-danger ms-2">{{ $expiredAssignments->count() }}</span>
+    </div>
+    <div class="card-body p-0">
+        @if($expiredAssignments->isEmpty())
+            <p class="text-muted p-4 mb-0"><i class="fas fa-check-circle me-2 text-success"></i>No hay cursos caducados.</p>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Curso</th>
+                            <th>Fecha fin</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($expiredAssignments as $a)
+                            <tr>
+                                <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
+                                <td>{{ $a->courseCall->course->title }}</td>
+                                <td><span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ $a->courseCall->end_date }}</span></td>
+                                <td>
+                                    @if($a->status == 'pending')
+                                        <span class="badge-pending">Pendiente</span>
+                                    @else
+                                        <span class="badge-progress">En curso</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+
+
+
 @endsection
-
-
