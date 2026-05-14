@@ -56,11 +56,11 @@
                             </strong>
                         </div>
 
-                        <div style="font-size: 0.95rem;">
+                        <div>
                             @if($a->status == 'pending')
-                                <span class="badge-pending">Pendiente</span>
+                                <span class="badge-pending" style="font-size: 0.95rem; padding: 6px 14px;">Pendiente</span>
                             @else
-                                <span class="badge-progress">En curso</span>
+                                <span class="badge-progress" style="font-size: 0.95rem; padding: 6px 14px;">En curso</span>
                             @endif
                         </div>
 

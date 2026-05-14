@@ -1,71 +1,84 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto p-6">
 
-    <h1 class="text-2xl font-bold mb-6">Histórico de cursos</h1>
+<h1 class="page-title"><i class="fas fa-history me-2"></i>Histórico de cursos</h1>
 
-    <!-- FILTROS -->
-    <form method="GET" class="bg-white p-4 shadow rounded mb-6 flex gap-4 items-end flex-wrap">
-        <div>
-            <label class="block text-sm mb-1">Buscar curso</label>
-            <input type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Nombre del curso"
-                class="border p-2 rounded w-56">
-        </div>
+<!-- FILTROS -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Buscar curso</label>
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Nombre del curso" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo de curso</label>
+                <select name="type" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="presencial" {{ request('type') == 'presencial' ? 'selected' : '' }}>Presencial</option>
+                    <option value="e-learning" {{ request('type') == 'e-learning' ? 'selected' : '' }}>E-learning</option>
+                    <option value="virtual" {{ request('type') == 'virtual' ? 'selected' : '' }}>Virtual</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i>Filtrar
+                </button>
+                <a href="{{ route('dashboard.history') }}" class="btn btn-secondary ms-2">
+                    <i class="fas fa-times me-1"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-        <div>
-            <label class="block text-sm mb-1">Tipo de curso</label>
-            <select name="type" class="border p-2 rounded w-44">
-                <option value="">Todos</option>
-                <option value="presencial" {{ request('type') == 'presencial' ? 'selected' : '' }}>Presencial</option>
-                <option value="e-learning" {{ request('type') == 'e-learning' ? 'selected' : '' }}>E-learning</option>
-                <option value="virtual" {{ request('type') == 'virtual' ? 'selected' : '' }}>Virtual</option>
-            </select>
-        </div>
-
-        <button class="bg-blue-500 text-white px-4 py-2 rounded h-[42px]">
-            Filtrar
-        </button>
-
-        <a href="{{ route('dashboard.history') }}" class="text-sm underline">
-            Limpiar
-        </a>
-    </form>
-
-    <!-- TABLA HISTÓRICO -->
-    <div class="bg-white p-4 shadow rounded">
-        <h2 class="font-semibold mb-3">Cursos completados</h2>
-
+<!-- TABLA HISTÓRICO -->
+<div class="card">
+    <div class="card-header-custom">
+        <i class="fas fa-check-circle me-2"></i>Cursos completados
+        <span class="badge bg-success ms-2">{{ $completedAssignments->count() }}</span>
+    </div>
+    <div class="card-body p-0">
         @if($completedAssignments->isEmpty())
-            <p class="text-gray-600">Aún no has completado cursos.</p>
+            <div class="text-center py-5">
+                <i class="fas fa-book me-2 text-muted" style="font-size: 2rem;"></i>
+                <p class="text-muted mt-2">Aún no has completado cursos.</p>
+            </div>
         @else
-            <table class="w-full border">
+            <table class="table table-hover mb-0">
                 <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border p-2 text-left">Curso</th>
-                        <th class="border p-2 text-left">Tipo</th>
-                        <th class="border p-2 text-left">Fecha inicio</th>
-                        <th class="border p-2 text-left">Fecha fin</th>
-                        <th class="border p-2 text-left">Estado</th>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Tipo</th>
+                        <th>Fecha inicio</th>
+                        <th>Fecha fin</th>
+                        <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($completedAssignments as $a)
                         <tr>
-                            <td class="border p-2">{{ $a->courseCall->course->title }}</td>
-                            <td class="border p-2">{{ $a->courseCall->course->type }}</td>
-                            <td class="border p-2">{{ $a->courseCall->start_date }}</td>
-                            <td class="border p-2">{{ $a->courseCall->end_date }}</td>
-                            <td class="border p-2 text-green-600 font-bold">Completado</td>
+                            <td style="font-size: 1rem;">{{ $a->courseCall->course->title }}</td>
+                            <td>
+                                @if($a->courseCall->course->type == 'presencial')
+                                    <span class="badge bg-success" style="font-size: 0.95rem; padding: 6px 14px;">Presencial</span>
+                                @elseif($a->courseCall->course->type == 'e-learning')
+                                    <span class="badge bg-info text-dark" style="font-size: 0.95rem; padding: 6px 14px;">E-learning</span>
+                                @else
+                                    <span class="badge bg-primary" style="font-size: 0.95rem; padding: 6px 14px;">Virtual</span>
+                                @endif
+                            </td>
+                            <td style="font-size: 1rem;">{{ $a->courseCall->start_date }}</td>
+                            <td style="font-size: 1rem;">{{ $a->courseCall->end_date }}</td>
+                            <td><span class="badge-completed" style="font-size: 0.95rem; padding: 6px 14px;"><i class="fas fa-check me-1"></i>Completado</span></td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @endif
     </div>
-
 </div>
+
 @endsection
