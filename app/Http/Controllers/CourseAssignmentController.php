@@ -12,31 +12,36 @@ class CourseAssignmentController extends Controller
 {
     public function index()
     {
-        $query = CourseAssignment::with(['user', 'courseCall.course']);
+        $userId = request('user_id');
+        $search = request('search');
 
-        // FILTRO POR EMPLEADO
-        if (request('user_id')) {
-            $query->where('user_id', request('user_id'));
-        }
+        $base = CourseAssignment::with(['user', 'courseCall.course'])
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
+                $q2->where('name', 'like', '%' . $search . '%')));
 
-        // BÚSQUEDA POR NOMBRE
-        if (request('search')) {
-            $query->whereHas('user', function ($q) {
-                $q->where('name', 'like', '%' . request('search') . '%');
-            });
-        }
+        // Completados
+        $completados = (clone $base)
+            ->where('status', 'completed')
+            ->get()->sortByDesc(fn($a) => $a->courseCall->end_date);
 
-        // ORDENAR POR FECHA FIN DE LA CONVOCATORIA
-        $assignments = $query->get()->sortBy(function ($a) {
-            return optional($a->courseCall)->end_date;
-        });
+        // Pendientes sin caducar
+        $pendientes = (clone $base)
+            ->where('status', '!=', 'completed')
+            ->whereHas('courseCall', fn($q) => $q->whereDate('end_date', '>=', now()))
+            ->get()->sortBy(fn($a) => $a->courseCall->end_date);
+
+        // Caducados
+        $caducados = (clone $base)
+            ->where('status', '!=', 'completed')
+            ->whereHas('courseCall', fn($q) => $q->whereDate('end_date', '<', now()))
+            ->get()->sortBy(fn($a) => $a->courseCall->end_date);
+
+        $assignments = $completados->concat($pendientes)->concat($caducados);
 
         $employees = User::orderBy('name')->get();
 
-        return view('admin.assignments.index', compact(
-            'assignments',
-            'employees'
-        ));
+        return view('admin.assignments.index', compact('assignments', 'employees'));
     }
 
     public function create()
@@ -54,7 +59,6 @@ class CourseAssignmentController extends Controller
 
         return view('admin.assignments.edit', compact('assignment'));
     }
-
 
     public function store(Request $request)
     {
@@ -90,10 +94,9 @@ class CourseAssignmentController extends Controller
             ->with('success', 'Estado actualizado');
     }
 
-    // Notificación manual desde admin
     public function notify($id)
     {
-        $assignment = CourseAssignment::with(['user','courseCall.course'])
+        $assignment = CourseAssignment::with(['user', 'courseCall.course'])
             ->findOrFail($id);
 
         $assignment->user->notify(
@@ -102,8 +105,7 @@ class CourseAssignmentController extends Controller
 
         return redirect()->back()
             ->with('success', 'Notificación enviada al empleado');
-        }
-
+    }
 
     public function destroy($id)
     {
@@ -113,4 +115,3 @@ class CourseAssignmentController extends Controller
             ->with('success', 'Asignación eliminada');
     }
 }
-
