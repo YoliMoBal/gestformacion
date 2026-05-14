@@ -3,10 +3,10 @@
 namespace App\Exports;
 
 use App\Models\User;
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class UsersExport implements FromView
+class UsersExport implements FromCollection, WithHeadings
 {
     protected $request;
 
@@ -15,7 +15,20 @@ class UsersExport implements FromView
         $this->request = $request;
     }
 
-    public function view(): View
+    public function headings(): array
+    {
+        return [
+            'Nombre',
+            'Email',
+            'Rol',
+            'Código Concesión',
+            'Ubicación',
+            'Departamento',
+            'Puesto',
+        ];
+    }
+
+    public function collection()
     {
         $query = User::with([
             'perfilEmpleado.codigoConcesionario.ubicacion',
@@ -23,7 +36,6 @@ class UsersExport implements FromView
             'perfilEmpleado.puesto',
         ]);
 
-        // 🔍 Búsqueda
         if ($this->request->filled('search')) {
             $search = $this->request->search;
             $query->where(function ($q) use ($search) {
@@ -32,29 +44,34 @@ class UsersExport implements FromView
             });
         }
 
-        // 🏬 Concesionario
         if ($this->request->filled('codigo_concesionario_id')) {
             $query->whereHas('perfilEmpleado', function ($q) {
                 $q->where('codigo_concesionario_id', $this->request->codigo_concesionario_id);
             });
         }
 
-        // 🏢 Departamento
         if ($this->request->filled('departamento_id')) {
             $query->whereHas('perfilEmpleado', function ($q) {
                 $q->where('departamento_id', $this->request->departamento_id);
             });
         }
 
-        // 🧑‍🔧 Puesto
         if ($this->request->filled('puesto_id')) {
             $query->whereHas('perfilEmpleado', function ($q) {
                 $q->where('puesto_id', $this->request->puesto_id);
             });
         }
 
-        return view('exports.users', [
-            'users' => $query->get()
-        ]);
+        return $query->get()->map(function ($user) {
+            return [
+                $user->name,
+                $user->email,
+                $user->role,
+                $user->perfilEmpleado?->codigoConcesionario?->codigo ?? '-',
+                $user->perfilEmpleado?->codigoConcesionario?->ubicacion?->nombre ?? '-',
+                $user->perfilEmpleado?->departamento?->nombre ?? '-',
+                $user->perfilEmpleado?->puesto?->nombre ?? '-',
+            ];
+        });
     }
 }
