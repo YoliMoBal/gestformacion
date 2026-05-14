@@ -24,8 +24,9 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100" style="border-left: 4px solid {{ $caducado ? '#dc2626' : ($urgente ? '#f59e0b' : '#2E6DA4') }};">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title mb-0">{{ $course->title }}</h5>
+
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0" style="font-size: 1.1rem; font-weight: 700;">{{ $course->title }}</h5>
                             @if($caducado)
                                 <span class="badge bg-danger ms-2">Caducado</span>
                             @elseif($urgente)
@@ -33,36 +34,36 @@
                             @endif
                         </div>
 
-                        <p class="text-muted small mb-3">
-                            @if($course->type == 'presencial')
-                                <span class="badge bg-success">Presencial</span>
-                            @elseif($course->type == 'e-learning')
-                                <span class="badge bg-info text-dark">E-learning</span>
-                            @else
-                                <span class="badge bg-primary">Virtual</span>
-                            @endif
-                        </p>
-
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-calendar-alt me-1"></i>
-                                Inicio: {{ $call->start_date }}
-                            </small>
-                        </div>
                         <div class="mb-3">
-                            <small class="{{ $caducado ? 'text-danger fw-bold' : ($urgente ? 'fw-bold' : 'text-muted') }}">
-                                <i class="fas fa-calendar-times me-1"></i>
-                                Fin: {{ $call->end_date }}
-                            </small>
+                            @if($course->type == 'presencial')
+                                <span class="badge bg-success" style="font-size: 0.85rem;">Presencial</span>
+                            @elseif($course->type == 'e-learning')
+                                <span class="badge bg-info text-dark" style="font-size: 0.85rem;">E-learning</span>
+                            @else
+                                <span class="badge bg-primary" style="font-size: 0.85rem;">Virtual</span>
+                            @endif
                         </div>
 
-                        <div>
+                        <div class="mb-2" style="font-size: 1rem;">
+                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                            <strong>Inicio:</strong> {{ $call->start_date }}
+                        </div>
+
+                        <div class="mb-3" style="font-size: 1rem;">
+                            <i class="fas fa-calendar-times me-2 {{ $caducado ? 'text-danger' : 'text-muted' }}"></i>
+                            <strong class="{{ $caducado ? 'text-danger' : ($urgente ? 'text-warning' : '') }}">
+                                Fin: {{ $call->end_date }}
+                            </strong>
+                        </div>
+
+                        <div style="font-size: 0.95rem;">
                             @if($a->status == 'pending')
                                 <span class="badge-pending">Pendiente</span>
                             @else
                                 <span class="badge-progress">En curso</span>
                             @endif
                         </div>
+
                     </div>
                 </div>
             </div>
