@@ -124,9 +124,10 @@
 </head>
 <body>
     <div class="login-card">
-        <div class="logo-icon">
-            <i class="fas fa-graduation-cap text-white"></i>
-        </div>
+        <div class="logo-icon" style="background: none;">
+    <img src="{{ asset('images/logo.jpg') }}" alt="GestFormación" 
+         style="width: 90%; height: 90%; object-fit: contain; margin: 5%;">
+</div>
         <h1 class="app-title">Gest<span>Formación</span></h1>
         <p class="app-subtitle">Inicia sesión para continuar</p>
 
