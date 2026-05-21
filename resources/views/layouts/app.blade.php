@@ -182,7 +182,7 @@
 <body>
     @include('layouts.navigation')
 
-    <main class="container-fluid px-4 py-4" style="max-width: 1400px; margin: 0 auto;">
+    <main class="container-fluid px-2 py-4" style="max-width: 100%; margin: 0 auto;">
         @if(session('success'))
             <div class="alert alert-success d-flex align-items-center mb-4">
                 <i class="fas fa-check-circle me-2"></i>
