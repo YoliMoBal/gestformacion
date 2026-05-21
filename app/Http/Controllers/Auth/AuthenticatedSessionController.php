@@ -11,29 +11,49 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        $tipo = $request->input('tipo');
+
+        if ($tipo === 'admin' && $user->role !== 'admin') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login', ['tipo' => 'admin'])
+                ->withErrors(['email' => 'Esta sección es solo para administradores.']);
+        }
+
+        if ($tipo === 'employee' && $user->role !== 'employee' && $user->role !== 'admin') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login', ['tipo' => 'employee'])
+                ->withErrors(['email' => 'Esta sección es solo para empleados.']);
+        }
+
+        // Si entra por acceso empleado, siempre va al dashboard
+        if ($tipo === 'employee') {
+            return redirect(route('dashboard'));
+        }
+
+        // Si es admin y entra por acceso admin, va al panel
+        if ($user->role === 'admin') {
+            return redirect(route('admin.panel'));
+        }
+
+        return redirect(route('dashboard'));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();

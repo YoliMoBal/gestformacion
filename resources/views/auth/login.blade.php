@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,9 +9,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
-            background-image: linear-gradient(rgba(26,58,92,0.75), rgba(26,58,92,0.75)),
+            background-image: linear-gradient(rgba(26, 58, 92, 0.75), rgba(26, 58, 92, 0.75)),
                 url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');
             background-size: cover;
             background-position: center;
@@ -21,23 +25,39 @@
             justify-content: center;
             animation: bgZoom 20s ease-in-out infinite alternate;
         }
+
         @keyframes bgZoom {
-            0%   { background-size: 100%; }
-            100% { background-size: 120%; }
+            0% {
+                background-size: 100%;
+            }
+
+            100% {
+                background-size: 120%;
+            }
         }
+
         .login-card {
-            background: rgba(255,255,255,0.97);
+            background: rgba(255, 255, 255, 0.97);
             border-radius: 20px;
             padding: 2.5rem;
             max-width: 420px;
             width: 90%;
-            box-shadow: 0 0 0 3px rgba(125,211,252,0.8), 0 25px 60px rgba(0,0,0,0.4);
+            box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.8), 0 25px 60px rgba(0, 0, 0, 0.4);
             animation: fadeInUp 0.8s ease-out;
         }
+
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .logo-icon {
             width: 60px;
             height: 60px;
@@ -49,6 +69,7 @@
             margin: 0 auto 1rem;
             font-size: 1.8rem;
         }
+
         .app-title {
             font-size: 1.6rem;
             font-weight: 800;
@@ -56,28 +77,36 @@
             text-align: center;
             margin-bottom: 0.2rem;
         }
-        .app-title span { color: #2E6DA4; }
+
+        .app-title span {
+            color: #2E6DA4;
+        }
+
         .app-subtitle {
             color: #6b7280;
             font-size: 0.9rem;
             text-align: center;
             margin-bottom: 1.5rem;
         }
+
         .form-control {
             border-radius: 10px;
             border: 1px solid #d1d5db;
             padding: 0.7rem 1rem;
             font-size: 0.95rem;
         }
+
         .form-control:focus {
             border-color: #2E6DA4;
-            box-shadow: 0 0 0 3px rgba(46,109,164,0.15);
+            box-shadow: 0 0 0 3px rgba(46, 109, 164, 0.15);
         }
+
         .form-label {
             font-weight: 600;
             font-size: 0.9rem;
             color: #374151;
         }
+
         .btn-login {
             background: linear-gradient(135deg, #2E6DA4, #1a3a5c);
             color: white;
@@ -89,14 +118,17 @@
             width: 100%;
             transition: all 0.2s;
         }
+
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(46,109,164,0.4);
+            box-shadow: 0 8px 20px rgba(46, 109, 164, 0.4);
             color: white;
         }
+
         .password-wrapper {
             position: relative;
         }
+
         .password-toggle {
             position: absolute;
             right: 12px;
@@ -109,41 +141,59 @@
             padding: 0;
             font-size: 1rem;
         }
-        .password-toggle:hover { color: #2E6DA4; }
+
+        .password-toggle:hover {
+            color: #2E6DA4;
+        }
+
         .back-link {
             text-align: center;
             margin-top: 1.2rem;
         }
+
         .back-link a {
             color: #6b7280;
             font-size: 0.85rem;
             text-decoration: none;
         }
-        .back-link a:hover { color: #1a3a5c; }
+
+        .back-link a:hover {
+            color: #1a3a5c;
+        }
     </style>
 </head>
+
 <body>
     <div class="login-card">
         <div class="logo-icon" style="background: none;">
-    <img src="{{ asset('images/logo.jpg') }}" alt="GestFormación" 
-         style="width: 90%; height: 90%; object-fit: contain; margin: 5%;">
-</div>
+            <img src="{{ asset('images/logo.jpg') }}" alt="GestFormación"
+                style="width: 90%; height: 90%; object-fit: contain; margin: 5%;">
+        </div>
         <h1 class="app-title">Gest<span>Formación</span></h1>
-        <p class="app-subtitle">Inicia sesión para continuar</p>
+        <p class="app-subtitle">
+    @if(request('tipo') == 'admin')
+        <span class="badge bg-primary">👮 Acceso Administrador</span>
+    @elseif(request('tipo') == 'employee')
+        <span class="badge bg-success">👤 Acceso Empleado</span>
+    @else
+        Inicia sesión para continuar
+    @endif
+</p>
 
         @if(session('status'))
-            <div class="alert alert-success mb-3">{{ session('status') }}</div>
+        <div class="alert alert-success mb-3">{{ session('status') }}</div>
         @endif
 
         @if($errors->any())
-            <div class="alert alert-danger mb-3">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                Las credenciales no coinciden con nuestros registros.
-            </div>
+        <div class="alert alert-danger mb-3">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            Las credenciales no coinciden con nuestros registros.
+        </div>
         @endif
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
+            <input type="hidden" name="tipo" value="{{ request('tipo') }}">
 
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
@@ -169,9 +219,9 @@
                     <label class="form-check-label small text-muted" for="remember">Recordarme</label>
                 </div>
                 @if(Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="small text-muted">
-                        ¿Olvidaste tu contraseña?
-                    </a>
+                <a href="{{ route('password.request') }}" class="small text-muted">
+                    ¿Olvidaste tu contraseña?
+                </a>
                 @endif
             </div>
 
@@ -202,4 +252,5 @@
         }
     </script>
 </body>
+
 </html>
