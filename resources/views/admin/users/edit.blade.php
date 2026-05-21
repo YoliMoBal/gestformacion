@@ -1,109 +1,128 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="text-2xl mb-4">Editar usuario</h1>
+<h1 class="page-title"><i class="fas fa-user-edit me-2"></i>Editar usuario</h1>
 
-<form action="{{ route('users.update', $user->id) }}" method="POST" class="bg-white p-4 rounded shadow">
-    @csrf
-    @method('PUT')
+<div class="card">
+    <div class="card-body">
+        <form action="{{ route('users.update', $user->id) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-    {{-- DATOS PERSONALES --}}
-    <h2 class="font-semibold mb-2">Datos personales</h2>
+            <h5 class="fw-bold mb-3">Datos personales</h5>
 
-    <label class="block mb-2">Nombre</label>
-    <input type="text" name="name" value="{{ $user->name }}" class="border p-2 w-full mb-4">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="name" value="{{ $user->name }}" class="form-control" required>
+            </div>
 
-    <label class="block mb-2">Email</label>
-    <input type="email" name="email" value="{{ $user->email }}" class="border p-2 w-full mb-4">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
+            </div>
 
-    <label class="block mb-2">Rol</label>
-    <select name="role" id="role" class="border p-2 w-full mb-4">
-        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrador</option>
-        <option value="empleado" {{ $user->role == 'empleado' ? 'selected' : '' }}>Empleado</option>
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Rol</label>
+                <select name="role" class="form-select">
+                    <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrador</option>
+                    <option value="employee" {{ $user->role == 'employee' ? 'selected' : '' }}>Empleado</option>
+                </select>
+            </div>
 
-    {{-- DATOS LABORALES --}}
-    <div id="datos-laborales">
-        <h2 class="font-semibold mt-6 mb-2">Datos laborales</h2>
+            <h5 class="fw-bold mt-4 mb-3">Datos laborales</h5>
 
-        <label class="block mb-2">Ubicación</label>
-        <select id="ubicacion" class="border p-2 w-full mb-4">
-            <option value="">Selecciona una ubicación</option>
-            @foreach($ubicaciones as $ubicacion)
-                <option value="{{ $ubicacion->id }}"
-                    {{ optional($perfil?->codigoConcesionario?->ubicacion)->id == $ubicacion->id ? 'selected' : '' }}>
-                    {{ $ubicacion->nombre }}
-                </option>
-            @endforeach
-        </select>
+            <div class="mb-3">
+                <label class="form-label">Ubicación</label>
+                <select id="ubicacion" class="form-select">
+                    <option value="">Selecciona una ubicación</option>
+                    @foreach($ubicaciones as $ubicacion)
+                        <option value="{{ $ubicacion->id }}"
+                            {{ optional($perfil?->codigoConcesionario?->ubicacion)->id == $ubicacion->id ? 'selected' : '' }}>
+                            {{ $ubicacion->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <label class="block mb-2">Código concesionario</label>
-        <select name="codigo_concesionario_id" id="codigo_concesionario" class="border p-2 w-full mb-4">
-            <option value="">Selecciona un código</option>
-            @foreach($ubicaciones as $ubicacion)
-                @foreach($ubicacion->codigosConcesionario as $codigo)
-                    <option value="{{ $codigo->id }}"
-                        data-ubicacion="{{ $ubicacion->id }}"
-                        {{ $perfil?->codigo_concesionario_id == $codigo->id ? 'selected' : '' }}>
-                        {{ $codigo->codigo }} ({{ $ubicacion->nombre }})
-                    </option>
-                @endforeach
-            @endforeach
-        </select>
+            <div class="mb-3">
+                <label class="form-label">Código concesionario</label>
+                <select name="codigo_concesionario_id" id="codigo_concesionario" class="form-select">
+                    <option value="">Selecciona un código</option>
+                    @foreach($ubicaciones as $ubicacion)
+                        @foreach($ubicacion->codigosConcesionario as $codigo)
+                            <option value="{{ $codigo->id }}"
+                                data-ubicacion="{{ $ubicacion->id }}"
+                                {{ $perfil?->codigo_concesionario_id == $codigo->id ? 'selected' : '' }}>
+                                {{ $codigo->codigo }} ({{ $ubicacion->nombre }})
+                            </option>
+                        @endforeach
+                    @endforeach
+                </select>
+            </div>
 
-        <label class="block mb-2">Departamento</label>
-        <select name="departamento_id" id="departamento" class="border p-2 w-full mb-4">
-            <option value="">Selecciona un departamento</option>
-            @foreach($departamentos as $departamento)
-                <option value="{{ $departamento->id }}"
-                    {{ $perfil?->departamento_id == $departamento->id ? 'selected' : '' }}>
-                    {{ $departamento->nombre }}
-                </option>
-            @endforeach
-        </select>
+            <div class="mb-3">
+                <label class="form-label">Departamento</label>
+                <select name="departamento_id" id="departamento" class="form-select">
+                    <option value="">Selecciona un departamento</option>
+                    @foreach($departamentos as $departamento)
+                        <option value="{{ $departamento->id }}"
+                            {{ $perfil?->departamento_id == $departamento->id ? 'selected' : '' }}>
+                            {{ $departamento->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <label class="block mb-2">Puesto</label>
-        <select name="puesto_id" id="puesto" class="border p-2 w-full mb-4">
-            <option value="">Selecciona un puesto</option>
-            @foreach($departamentos as $departamento)
-                @foreach($departamento->puestos as $puesto)
-                    <option value="{{ $puesto->id }}"
-                        data-departamento="{{ $departamento->id }}"
-                        {{ $perfil?->puesto_id == $puesto->id ? 'selected' : '' }}>
-                        {{ $puesto->nombre }}
-                    </option>
-                @endforeach
-            @endforeach
-        </select>
+            <div class="mb-3">
+                <label class="form-label">Puesto</label>
+                <select name="puesto_id" id="puesto" class="form-select">
+                    <option value="">Selecciona un puesto</option>
+                    @foreach(\App\Models\Puesto::orderBy('nombre')->get() as $puesto)
+                        <option value="{{ $puesto->id }}"
+                            data-departamento="{{ $puesto->departamento_id }}"
+                            {{ $perfil?->puesto_id == $puesto->id ? 'selected' : '' }}>
+                            {{ $puesto->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Guardar cambios
+                </button>
+                <a href="{{ route('users.index') }}" class="btn btn-secondary ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
+        </form>
     </div>
-
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-        Guardar cambios
-    </button>
-</form>
+</div>
 
 <script>
-document.getElementById('datos-laborales').style.display = 'block';
+function filtrarPuestos() {
+    const departamentoId = document.getElementById('departamento').value;
+    const puestoSelect = document.getElementById('puesto');
+    puestoSelect.querySelectorAll('option').forEach(option => {
+        if (!option.dataset.departamento) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = option.dataset.departamento === departamentoId ? 'block' : 'none';
+        }
+    });
+}
 
-
-
-// Filtros
+document.getElementById('departamento').addEventListener('change', filtrarPuestos);
 document.getElementById('ubicacion').addEventListener('change', function () {
     const ubicacionId = this.value;
     document.querySelectorAll('#codigo_concesionario option').forEach(option => {
         option.style.display = !option.dataset.ubicacion || option.dataset.ubicacion === ubicacionId
-            ? 'block'
-            : 'none';
+            ? 'block' : 'none';
     });
 });
 
-document.getElementById('departamento').addEventListener('change', function () {
-    const departamentoId = this.value;
-    document.querySelectorAll('#puesto option').forEach(option => {
-        option.style.display = !option.dataset.departamento || option.dataset.departamento === departamentoId
-            ? 'block'
-            : 'none';
-    });
-});
+// Ejecutar al cargar
+filtrarPuestos();
 </script>
+
 @endsection
