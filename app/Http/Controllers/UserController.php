@@ -69,7 +69,14 @@ class UserController extends Controller
             'puestos'
         ));
     }
+    public function create()
+    {
+        $ubicaciones = \App\Models\Ubicacion::with('codigosConcesionario')->get();
+        $departamentos = \App\Models\Departamento::orderBy('nombre')->get();
+        $puestos = \App\Models\Puesto::orderBy('nombre')->get();
 
+        return view('admin.users.create', compact('ubicaciones', 'departamentos', 'puestos'));
+    }
 
 
     public function store(Request $request)
