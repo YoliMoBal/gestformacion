@@ -26,18 +26,21 @@ class CourseDeadlineNotification extends Notification
     public function toMail($notifiable)
     {
         $course = $this->courseCall->course;
+        $diasRestantes = Carbon::today()->diffInDays(Carbon::parse($this->courseCall->end_date));
 
         return (new MailMessage)
-            ->subject('Recordatorio de curso: ' . $course->title)
-            ->greeting('Hola ' . $notifiable->name)
-            ->line('El curso "' . $course->title . '" está próximo a finalizar.')
-            ->line('Fecha inicio: ' . Carbon::parse($this->courseCall->start_date)->format('d/m/Y'))
-            ->line('Fecha fin: ' . Carbon::parse($this->courseCall->end_date)->format('d/m/Y'))
-            ->line('Este es un aviso automático del sistema de formación.')
-            ->salutation('Formación Rombosol');
+            ->subject('⏰ Recordatorio de formación: ' . $course->title)
+            ->greeting('Hola, ' . $notifiable->name . '!')
+            ->line('Te recordamos que tienes un curso pendiente de completar.')
+            ->line('**Curso:** ' . $course->title)
+            ->line('**Tipo:** ' . ucfirst($course->type))
+            ->line('**Fecha inicio:** ' . Carbon::parse($this->courseCall->start_date)->format('d/m/Y'))
+            ->line('**Fecha límite:** ' . Carbon::parse($this->courseCall->end_date)->format('d/m/Y'))
+            ->line('⚠️ Te quedan **' . $diasRestantes . ' días** para completarlo.')
+            ->line('Por favor, completa la formación antes de la fecha límite.')
+            ->salutation('Un saludo, GestFormación — Rombosol');
     }
 }
-
 
 
 

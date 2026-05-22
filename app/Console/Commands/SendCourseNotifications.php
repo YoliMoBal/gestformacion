@@ -15,36 +15,31 @@ class SendCourseNotifications extends Command
     public function handle()
     {
         $today = Carbon::today();
-
         $daysBefore = [7, 3, 1];
 
         foreach ($daysBefore as $days) {
-
             $targetDate = $today->copy()->addDays($days);
+            $column = "notified_{$days}_day" . ($days === 1 ? '_at' : 's_at');
 
             $assignments = CourseAssignment::whereHas('courseCall', function ($query) use ($targetDate) {
                     $query->whereDate('end_date', $targetDate);
                 })
                 ->where('status', '!=', 'completed')
-                ->where("notified_{$days}_days", false)
+                ->whereNull($column)
                 ->with(['user', 'courseCall.course'])
                 ->get();
 
             foreach ($assignments as $assignment) {
-
                 if ($assignment->user && $assignment->user->email) {
-
                     $assignment->user->notify(
                         new CourseDeadlineNotification($assignment->courseCall)
                     );
-
-                    $assignment->update(["notified_{$days}_days" => true]);
+                    $assignment->update([$column => now()]);
                 }
             }
         }
 
         $this->info('Notificaciones enviadas correctamente.');
-
         return Command::SUCCESS;
     }
 }
