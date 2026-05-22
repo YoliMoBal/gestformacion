@@ -85,7 +85,7 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'dni' => 'required|string|unique:users',
-            'role' => 'required|in:admin,empleado',
+            'role' => 'required|in:admin,employee',
             'password' => 'required|string|min:6',
 
             'codigo_concesionario_id' => 'nullable|exists:codigos_concesionario,id',

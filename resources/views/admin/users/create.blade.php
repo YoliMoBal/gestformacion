@@ -1,107 +1,136 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="text-2xl mb-4">Crear Usuario</h1>
+
+<h1 class="page-title"><i class="fas fa-user-plus me-2"></i>Crear Usuario</h1>
+
 @if ($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 p-3 mb-4 rounded">
-        <ul>
+    <div class="alert alert-danger mb-4">
+        <ul class="mb-0">
             @foreach ($errors->all() as $error)
-                <li>• {{ $error }}</li>
+                <li>{{ $error }}</li>
             @endforeach
         </ul>
     </div>
 @endif
 
-<form action="{{ route('users.store') }}" method="POST" class="bg-white p-4 rounded shadow">
-    @csrf
+<div class="card">
+    <div class="card-body">
+        <form action="{{ route('users.store') }}" method="POST" autocomplete="off">
+            @csrf
 
-    {{-- DATOS PERSONALES --}}
-    <h2 class="font-semibold mb-2">Datos personales</h2>
+            <h5 class="fw-bold mb-3">Datos personales</h5>
 
-    <label class="block mb-2">Nombre</label>
-    <input type="text" name="name" class="border p-2 w-full mb-4" required>
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="name" class="form-control" autocomplete="off" required>
+            </div>
 
-    <label class="block mb-2">Email</label>
-    <input type="email" name="email" class="border p-2 w-full mb-4" required>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" autocomplete="off" required>
+            </div>
 
-    <label class="block mb-2">DNI</label>
-    <input type="text" name="dni" class="border p-2 w-full mb-4" required>
+            <div class="mb-3">
+                <label class="form-label">DNI</label>
+                <input type="text" name="dni" class="form-control" autocomplete="off" required>
+            </div>
 
-    <label class="block mb-2">Rol</label>
-    <select name="role" class="border p-2 w-full mb-4">
-        <option value="empleado">Empleado</option>
-        <option value="admin">Administrador</option>
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Rol</label>
+                <select name="role" class="form-select">
+                    <option value="employee">Empleado</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
 
-    <label class="block mb-2">Contraseña</label>
-    <input type="password" name="password" class="border p-2 w-full mb-4" required>
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" name="password" class="form-control" autocomplete="new-password" required>
+            </div>
 
-    {{-- DATOS LABORALES --}}
-    <h2 class="font-semibold mt-6 mb-2">Datos laborales</h2>
+            <h5 class="fw-bold mt-4 mb-3">Datos laborales</h5>
 
-    <label class="block mb-2">Ubicación</label>
-    <select id="ubicacion" class="border p-2 w-full mb-4">
-        <option value="">Selecciona una ubicación</option>
-        @foreach($ubicaciones as $ubicacion)
-            <option value="{{ $ubicacion->id }}">{{ $ubicacion->nombre }}</option>
-        @endforeach
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Ubicación</label>
+                <select id="ubicacion" class="form-select">
+                    <option value="">Selecciona una ubicación</option>
+                    @foreach($ubicaciones as $ubicacion)
+                        <option value="{{ $ubicacion->id }}">{{ $ubicacion->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-    <label class="block mb-2">Código concesionario</label>
-    <select name="codigo_concesionario_id" id="codigo_concesionario" class="border p-2 w-full mb-4" required>
-        <option value="">Selecciona un código</option>
-        @foreach($ubicaciones as $ubicacion)
-            @foreach($ubicacion->codigosConcesionario as $codigo)
-                <option value="{{ $codigo->id }}" data-ubicacion="{{ $ubicacion->id }}">
-                    {{ $codigo->codigo }} ({{ $ubicacion->nombre }})
-                </option>
-            @endforeach
-        @endforeach
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Código concesionario</label>
+                <select name="codigo_concesionario_id" id="codigo_concesionario" class="form-select">
+                    <option value="">Selecciona un código</option>
+                    @foreach($ubicaciones as $ubicacion)
+                        @foreach($ubicacion->codigosConcesionario as $codigo)
+                            <option value="{{ $codigo->id }}" data-ubicacion="{{ $ubicacion->id }}">
+                                {{ $codigo->codigo }} ({{ $ubicacion->nombre }})
+                            </option>
+                        @endforeach
+                    @endforeach
+                </select>
+            </div>
 
-    <label class="block mb-2">Departamento</label>
-    <select name="departamento_id" id="departamento" class="border p-2 w-full mb-4" required>
-        <option value="">Selecciona un departamento</option>
-        @foreach($departamentos as $departamento)
-            <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
-        @endforeach
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Departamento</label>
+                <select name="departamento_id" id="departamento" class="form-select">
+                    <option value="">Selecciona un departamento</option>
+                    @foreach($departamentos as $departamento)
+                        <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-    <label class="block mb-2">Puesto</label>
-    <select name="puesto_id" id="puesto" class="border p-2 w-full mb-4" required>
-        <option value="">Selecciona un puesto</option>
-        @foreach($departamentos as $departamento)
-            @foreach($departamento->puestos as $puesto)
-                <option value="{{ $puesto->id }}" data-departamento="{{ $departamento->id }}">
-                    {{ $puesto->nombre }}
-                </option>
-            @endforeach
-        @endforeach
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Puesto</label>
+                <select name="puesto_id" id="puesto" class="form-select">
+                    <option value="">Selecciona un puesto</option>
+                    @foreach($puestos as $puesto)
+                        <option value="{{ $puesto->id }}" data-departamento="{{ $puesto->departamento_id }}">
+                            {{ $puesto->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-        Crear usuario
-    </button>
-</form>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Crear usuario
+                </button>
+                <a href="{{ route('users.index') }}" class="btn btn-secondary ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-{{-- JS SIMPLE PARA FILTRAR SELECTS --}}
 <script>
+function filtrarPuestos() {
+    const departamentoId = document.getElementById('departamento').value;
+    document.querySelectorAll('#puesto option').forEach(option => {
+        if (!option.dataset.departamento) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = option.dataset.departamento === departamentoId ? 'block' : 'none';
+        }
+    });
+}
+
 document.getElementById('ubicacion').addEventListener('change', function () {
     const ubicacionId = this.value;
     document.querySelectorAll('#codigo_concesionario option').forEach(option => {
         option.style.display = !option.dataset.ubicacion || option.dataset.ubicacion === ubicacionId
-            ? 'block'
-            : 'none';
+            ? 'block' : 'none';
     });
 });
 
-document.getElementById('departamento').addEventListener('change', function () {
-    const departamentoId = this.value;
-    document.querySelectorAll('#puesto option').forEach(option => {
-        option.style.display = !option.dataset.departamento || option.dataset.departamento === departamentoId
-            ? 'block'
-            : 'none';
-    });
-});
+document.getElementById('departamento').addEventListener('change', filtrarPuestos);
+filtrarPuestos();
 </script>
+
 @endsection
