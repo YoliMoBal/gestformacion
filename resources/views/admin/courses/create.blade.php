@@ -1,60 +1,54 @@
-
 @extends('layouts.app')
 
-
 @section('content')
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear curso</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="p-4">
 
-    <h1>Crear nuevo curso</h1>
+<h1 class="page-title"><i class="fas fa-book me-2"></i>Crear nuevo curso</h1>
 
-    <a href="{{ route('courses.index') }}" class="btn btn-secondary mb-3">
-        ← Volver
-    </a>
+@if ($errors->any())
+    <div class="alert alert-danger mb-4">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-    <form action="{{ route('courses.store') }}" method="POST">
-        @csrf
+<div class="card">
+    <div class="card-body">
+        <form action="{{ route('courses.store') }}" method="POST">
+            @csrf
 
-        <div class="mb-3">
-            <label class="form-label">Título del curso</label>
-            <input type="text" name="title" class="form-control" required>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Título del curso</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Descripción</label>
-            <textarea name="description" class="form-control"></textarea>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Tipo de curso</label>
-            <select name="type" class="form-select" required>
-                <option value="">-- Selecciona --</option>
-                <option value="presencial">Presencial</option>
-                <option value="e-learning">E-learning</option>
-                <option value="virtual">Virtual</option>
-            </select>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Tipo de curso</label>
+                <select name="type" class="form-select" required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="presencial">Presencial</option>
+                    <option value="e-learning">E-learning</option>
+                    <option value="virtual">Virtual</option>
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Fecha inicio</label>
-            <input type="date" name="start_date" class="form-control">
-        </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Guardar curso
+                </button>
+                <a href="{{ route('courses.index') }}" class="btn btn-secondary ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-        <div class="mb-3">
-            <label class="form-label">Fecha fin</label>
-            <input type="date" name="end_date" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-success">
-            Guardar curso
-        </button>
-    </form>
-
-</body>
 @endsection

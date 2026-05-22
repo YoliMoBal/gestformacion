@@ -13,21 +13,30 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">Buscar empleado</label>
                 <input type="text" name="search" class="form-control"
                     placeholder="Nombre del empleado..." value="{{ request('search') }}">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">Empleado</label>
                 <select name="user_id" class="form-select">
                     <option value="">Todos los empleados</option>
                     @foreach($employees as $employee)
-                        <option value="{{ $employee->id }}"
-                            {{ request('user_id') == $employee->id ? 'selected' : '' }}>
-                            {{ $employee->name }}
-                        </option>
+                    <option value="{{ $employee->id }}"
+                        {{ request('user_id') == $employee->id ? 'selected' : '' }}>
+                        {{ $employee->name }}
+                    </option>
                     @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="pending" {{ request('estado') == 'pending' ? 'selected' : '' }}>Pendientes</option>
+                    <option value="in_progress" {{ request('estado') == 'in_progress' ? 'selected' : '' }}>En curso</option>
+                    <option value="completed" {{ request('estado') == 'completed' ? 'selected' : '' }}>Completados</option>
                 </select>
             </div>
             <div class="col-auto">
@@ -66,70 +75,70 @@
             </thead>
             <tbody>
                 @forelse($assignments as $a)
-                    @php
-                        $call = $a->courseCall;
-                        $course = optional($call)->course;
-                        $caducado = $call && $call->end_date &&
-                            \Carbon\Carbon::parse($call->end_date)->lt(now()) &&
-                            $a->status != 'completed';
-                        $urgente = $call && $call->end_date &&
-                            \Carbon\Carbon::parse($call->end_date)->gte(now()) &&
-                            \Carbon\Carbon::parse($call->end_date)->lte(now()->addDays(7)) &&
-                            $a->status != 'completed';
-                    @endphp
-                    <tr class="{{ $a->status == 'completed' ? 'table-success' : ($caducado ? 'table-danger' : ($urgente ? 'table-warning' : '')) }}">
-                        <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
-                        <td>{{ $course?->title ?? '-' }}</td>
-                        <td>{{ $call?->start_date ?? '-' }}</td>
-                        <td>
-                            @if($caducado)
-                                <span class="text-danger fw-bold">
-                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}
-                                </span>
-                            @elseif($urgente)
-                                <span class="fw-bold" style="color:#92400e;">
-                                    <i class="fas fa-clock me-1"></i>{{ $call->end_date }}
-                                </span>
-                            @else
-                                {{ $call?->end_date ?? '-' }}
-                            @endif
-                        </td>
-                        <td>
-                            @if($a->status == 'pending')
-                                <span class="badge-pending">Pendiente</span>
-                            @elseif($a->status == 'in_progress')
-                                <span class="badge-progress">En curso</span>
-                            @else
-                                <span class="badge-completed">Completado</span>
-                            @endif
-                        </td>
-                        <td style="white-space: nowrap;">
-                            <a href="{{ route('assignments.edit', $a->id) }}" class="btn btn-sm btn-warning me-1">
-                                <i class="fas fa-edit me-1"></i>Editar
-                            </a>
-                            <form action="{{ route('assignments.destroy', $a->id) }}" method="POST" style="display:inline">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger me-1">
-                                    <i class="fas fa-trash me-1"></i>Eliminar
-                                </button>
-                            </form>
-                            @if($a->status != 'completed')
-                                <form action="{{ route('assignments.notify', $a->id) }}" method="POST" style="display:inline">
-                                    @csrf
-                                    <button class="btn btn-sm btn-info text-white">
-                                        <i class="fas fa-bell me-1"></i>Notificar
-                                    </button>
-                                </form>
-                            @endif
-                        </td>
-                    </tr>
+                @php
+                $call = $a->courseCall;
+                $course = optional($call)->course;
+                $caducado = $call && $call->end_date &&
+                \Carbon\Carbon::parse($call->end_date)->lt(now()) &&
+                $a->status != 'completed';
+                $urgente = $call && $call->end_date &&
+                \Carbon\Carbon::parse($call->end_date)->gte(now()) &&
+                \Carbon\Carbon::parse($call->end_date)->lte(now()->addDays(7)) &&
+                $a->status != 'completed';
+                @endphp
+                <tr class="{{ $a->status == 'completed' ? 'table-success' : ($caducado ? 'table-danger' : ($urgente ? 'table-warning' : '')) }}">
+                    <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
+                    <td>{{ $course?->title ?? '-' }}</td>
+                    <td>{{ $call?->start_date ?? '-' }}</td>
+                    <td>
+                        @if($caducado)
+                        <span class="text-danger fw-bold">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}
+                        </span>
+                        @elseif($urgente)
+                        <span class="fw-bold" style="color:#92400e;">
+                            <i class="fas fa-clock me-1"></i>{{ $call->end_date }}
+                        </span>
+                        @else
+                        {{ $call?->end_date ?? '-' }}
+                        @endif
+                    </td>
+                    <td>
+                        @if($a->status == 'pending')
+                        <span class="badge-pending">Pendiente</span>
+                        @elseif($a->status == 'in_progress')
+                        <span class="badge-progress">En curso</span>
+                        @else
+                        <span class="badge-completed">Completado</span>
+                        @endif
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <a href="{{ route('assignments.edit', $a->id) }}" class="btn btn-sm btn-warning me-1">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        <form action="{{ route('assignments.destroy', $a->id) }}" method="POST" style="display:inline">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger me-1">
+                                <i class="fas fa-trash me-1"></i>Eliminar
+                            </button>
+                        </form>
+                        @if($a->status != 'completed')
+                        <form action="{{ route('assignments.notify', $a->id) }}" method="POST" style="display:inline">
+                            @csrf
+                            <button class="btn btn-sm btn-info text-white">
+                                <i class="fas fa-bell me-1"></i>Notificar
+                            </button>
+                        </form>
+                        @endif
+                    </td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            <i class="fas fa-tasks me-2"></i>No hay asignaciones
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-tasks me-2"></i>No hay asignaciones
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

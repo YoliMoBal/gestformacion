@@ -15,10 +15,13 @@ class CourseAssignmentController extends Controller
         $userId = request('user_id');
         $search = request('search');
 
+        $estado = request('estado');
+
         $base = CourseAssignment::with(['user', 'courseCall.course'])
             ->when($userId, fn($q) => $q->where('user_id', $userId))
             ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
-                $q2->where('name', 'like', '%' . $search . '%')));
+            $q2->where('name', 'like', '%' . $search . '%')))
+            ->when($estado, fn($q) => $q->where('status', $estado));
 
         // Completados
         $completados = (clone $base)
@@ -37,7 +40,7 @@ class CourseAssignmentController extends Controller
             ->whereHas('courseCall', fn($q) => $q->whereDate('end_date', '<', now()))
             ->get()->sortBy(fn($a) => $a->courseCall->end_date);
 
-        $assignments = $completados->concat($pendientes)->concat($caducados);
+        $assignments = $pendientes->concat($caducados)->concat($completados);
 
         $employees = User::orderBy('name')->get();
 
