@@ -171,14 +171,14 @@
         </div>
         <h1 class="app-title">Gest<span>Formación</span></h1>
         <p class="app-subtitle">
-    @if(request('tipo') == 'admin')
-        <span class="badge bg-primary">👮 Acceso Administrador</span>
-    @elseif(request('tipo') == 'employee')
-        <span class="badge bg-success">👤 Acceso Empleado</span>
-    @else
-        Inicia sesión para continuar
-    @endif
-</p>
+            @if(request('tipo') == 'admin')
+            <span class="badge bg-primary">👮 Acceso Administrador</span>
+            @elseif(request('tipo') == 'employee')
+            <span class="badge bg-success">👤 Acceso Empleado</span>
+            @else
+            Inicia sesión para continuar
+            @endif
+        </p>
 
         @if(session('status'))
         <div class="alert alert-success mb-3">{{ session('status') }}</div>

@@ -26,10 +26,10 @@ class CourseController extends Controller
         ]);
 
         Course::create([
-    'title' => $request->title,
-    'description' => $request->description,
-    'type' => $request->type,
-]);
+            'title' => $request->title,
+            'description' => $request->description,
+            'type' => $request->type,
+        ]);
 
         return redirect()->route('courses.index')
             ->with('success', 'Curso creado correctamente');
@@ -49,9 +49,7 @@ class CourseController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'type' => $request->type,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-]);
+        ]);
 
         return redirect()->route('courses.index')
             ->with('success', 'Curso actualizado');
