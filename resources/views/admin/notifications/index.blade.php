@@ -9,6 +9,7 @@
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
+                    <th>Empleado</th>
                     <th>Título</th>
                     <th>Mensaje</th>
                     <th>Fecha</th>
@@ -19,6 +20,10 @@
             <tbody>
                 @forelse($notifications as $notification)
                     <tr class="{{ $notification->read_at ? '' : 'table-primary' }}">
+                        <td>
+                            <i class="fas fa-user me-2 text-muted"></i>
+                            {{ $notification->notifiable->name ?? '-' }}
+                        </td>
                         <td>
                             <i class="fas fa-bell me-2 {{ $notification->read_at ? 'text-muted' : 'text-primary' }}"></i>
                             <strong>{{ $notification->data['title'] ?? 'Notificación' }}</strong>
@@ -52,7 +57,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
+                        <td colspan="6" class="text-center text-muted py-4">
                             <i class="fas fa-bell-slash me-2"></i>No hay notificaciones
                         </td>
                     </tr>
@@ -67,5 +72,3 @@
 </div>
 
 @endsection
-
-

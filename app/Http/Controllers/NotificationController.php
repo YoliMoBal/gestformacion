@@ -13,7 +13,8 @@ class NotificationController extends Controller
     // LISTAR NOTIFICACIONES ADMIN
     public function index()
     {
-        $notifications = Auth::user()->notifications()->latest()->paginate(10);
+        $notifications = \Illuminate\Notifications\DatabaseNotification::latest()
+            ->paginate(10);
 
         return view('admin.notifications.index', compact('notifications'));
     }
@@ -21,7 +22,7 @@ class NotificationController extends Controller
     // MARCAR COMO LEÍDA
     public function markAsRead($id)
     {
-        $notification = Auth::user()->notifications()->findOrFail($id);
+        $notification = \Illuminate\Notifications\DatabaseNotification::findOrFail($id);
         $notification->markAsRead();
 
         return back()->with('success', 'Notificación marcada como leída');
@@ -45,7 +46,3 @@ class NotificationController extends Controller
         return back()->with('success', 'Notificaciones enviadas manualmente');
     }
 }
-
-
-
-
