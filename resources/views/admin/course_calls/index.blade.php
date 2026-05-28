@@ -9,9 +9,30 @@
     </a>
 </div>
 
+<!-- BUSCADOR -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Buscar curso</label>
+                <input type="text" id="buscador" class="form-control" placeholder="Nombre del curso...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo</label>
+                <select id="filtro_tipo" class="form-select">
+                    <option value="">Todos los tipos</option>
+                    <option value="presencial">Presencial</option>
+                    <option value="e-learning">E-learning</option>
+                    <option value="virtual">Virtual</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
+        <table class="table table-hover mb-0" id="tabla_convocatorias">
             <thead>
                 <tr>
                     <th>Curso</th>
@@ -24,7 +45,7 @@
             </thead>
             <tbody>
                 @forelse($calls as $call)
-                    <tr>
+                    <tr data-nombre="{{ strtolower($call->course->title) }}" data-tipo="{{ $call->course->type }}">
                         <td>{{ $call->course->title }}</td>
                         <td>
                             @if($call->course->type == 'presencial')
@@ -35,15 +56,15 @@
                                 <span class="badge bg-primary">Virtual</span>
                             @endif
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') }}</td>
+                        <td>{{ $call->start_date }}</td>
                         <td>
                             @if($call->end_date < now()->format('Y-m-d'))
-                                <span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}</span>
+                                <span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}</span>
                             @else
-                                {{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
+                                {{ $call->end_date }}
                             @endif
                         </td>
-                        <td><span class="badge bg-secondary">{{ $call->notify_days_before }} días</span></td>
+                        <td><span class="badge bg-secondary">7 · 3 · 1 días</span></td>
                         <td style="white-space: nowrap;">
                             <a href="{{ route('course-calls.edit', $call) }}" class="btn btn-sm btn-warning me-1">
                                 <i class="fas fa-edit me-1"></i>Editar
@@ -70,4 +91,23 @@
     </div>
 </div>
 
+<script>
+function normalizar(t) {
+    return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+document.getElementById('buscador').addEventListener('input', filtrar);
+document.getElementById('filtro_tipo').addEventListener('change', filtrar);
+
+function filtrar() {
+    const texto = normalizar(document.getElementById('buscador').value);
+    const tipo = document.getElementById('filtro_tipo').value;
+    document.querySelectorAll('#tabla_convocatorias tbody tr').forEach(row => {
+        const nombre = normalizar(row.dataset.nombre || "");
+        const tipoCurso = row.dataset.tipo || "";
+        const matchTexto = !texto || nombre.includes(texto);
+        const matchTipo = !tipo || tipoCurso === tipo;
+        row.style.display = matchTexto && matchTipo ? "" : "none";
+    });
+}
+</script>
 @endsection

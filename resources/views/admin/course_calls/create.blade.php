@@ -78,6 +78,7 @@
                         <label class="form-label">Fecha fin (calculada)</label>
                         <input type="date" name="end_date_presencial" id="end_date_presencial"
                             class="form-control" readonly style="background:#f8f9fa;">
+                        <input type="hidden" name="end_date" id="end_date_hidden">
                     </div>
                 </div>
 
@@ -87,11 +88,11 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Hora inicio mañana</label>
-                        <input type="time" name="hora_inicio_manana" class="form-control" value="09:00">
+                        <input type="time" name="hora" class="form-control" value="09:00">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Hora fin mañana</label>
-                        <input type="time" name="hora_fin_manana" class="form-control" value="14:00">
+                        <input type="time" name="hora_fin" class="form-control" value="14:00">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Hora inicio tarde (opcional)</label>
@@ -202,7 +203,9 @@ function calcularFechaFinPresencial() {
             const dia = fechaObj.getDay();
             if (dia !== 0 && dia !== 6) diasHabiles++;
         }
-        document.getElementById('end_date_presencial').value = fechaObj.toISOString().split('T')[0];
+        const fechaCalculada = fechaObj.toISOString().split('T')[0];
+        document.getElementById('end_date_presencial').value = fechaCalculada;
+        document.getElementById('end_date_hidden').value = fechaCalculada;
     }
 }
 
