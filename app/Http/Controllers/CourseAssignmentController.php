@@ -52,7 +52,10 @@ class CourseAssignmentController extends Controller
     public function create()
     {
         $users = User::orderBy('name')->get();
-        $calls = CourseCall::with('course')->orderBy('start_date')->get();
+        $calls = CourseCall::with('course')
+            ->whereDate('end_date', '>=', now())
+            ->orderBy('end_date')
+            ->get();
 
         return view('admin.assignments.create', compact('users', 'calls'));
     }
