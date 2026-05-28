@@ -88,19 +88,31 @@
                 @endphp
                 <tr class="{{ $a->status == 'completed' ? 'table-success' : ($caducado ? 'table-danger' : ($urgente ? 'table-warning' : '')) }}">
                     <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
-                    <td>{{ $course?->title ?? '-' }}</td>
-                    <td>{{ $call ? \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') : '-' }}</td>
+                    <td>
+                        {{ $course?->title ?? '-' }}
+                        @if($course)
+                        <br>
+                        @if($course->type == 'presencial')
+                            <span style="background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600;">Presencial</span>
+                        @elseif($course->type == 'virtual')
+                            <span style="background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600;">Virtual</span>
+                        @elseif($course->type == 'e-learning')
+                            <span style="background:#f0fdf4; color:#166534; padding:2px 8px; border-radius:20px; font-size:0.75rem; font-weight:600;">E-learning</span>
+                        @endif
+                        @endif
+                    </td>
+                    <td>{{ $call?->start_date ?? '-' }}</td>
                     <td>
                         @if($caducado)
                         <span class="text-danger fw-bold">
-                            <i class="fas fa-exclamation-circle me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}
                         </span>
                         @elseif($urgente)
                         <span class="fw-bold" style="color:#92400e;">
-                            <i class="fas fa-clock me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
+                            <i class="fas fa-clock me-1"></i>{{ $call->end_date }}
                         </span>
                         @else
-                        {{ $call ? \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') : '-' }}
+                        {{ $call?->end_date ?? '-' }}
                         @endif
                     </td>
                     <td>
