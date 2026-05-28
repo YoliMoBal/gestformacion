@@ -14,13 +14,15 @@ class CourseAssignmentController extends Controller
     {
         $userId = request('user_id');
         $search = request('search');
-
+        $searchCourse = request('search_course');
         $estado = request('estado');
 
         $base = CourseAssignment::with(['user', 'courseCall.course'])
             ->when($userId, fn($q) => $q->where('user_id', $userId))
             ->when($search, fn($q) => $q->whereHas('user', fn($q2) =>
-            $q2->where('name', 'like', '%' . $search . '%')))
+                $q2->where('name', 'like', '%' . $search . '%')))
+            ->when($searchCourse, fn($q) => $q->whereHas('courseCall.course', fn($q2) =>
+                $q2->where('title', 'like', '%' . $searchCourse . '%')))
             ->when($estado, fn($q) => $q->where('status', $estado));
 
         // Completados

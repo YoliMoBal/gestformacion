@@ -88,11 +88,11 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Hora inicio mañana</label>
-                        <input type="time" name="hora" class="form-control" value="09:00">
+                        <input type="time" name="hora_inicio_manana" class="form-control" value="09:00">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Hora fin mañana</label>
-                        <input type="time" name="hora_fin" class="form-control" value="14:00">
+                        <input type="time" name="hora_fin_manana" class="form-control" value="14:00">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Hora inicio tarde (opcional)</label>

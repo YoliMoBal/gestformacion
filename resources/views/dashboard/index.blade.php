@@ -46,18 +46,20 @@
 
                         <div class="mb-2" style="font-size: 1rem;">
                             <i class="fas fa-calendar-alt me-2 text-muted"></i>
-                            <strong>Inicio:</strong> {{ $call->start_date }}
+                            <strong>Inicio:</strong> {{ \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') }}
                         </div>
 
                         <div class="mb-3" style="font-size: 1rem;">
                             <i class="fas fa-calendar-times me-2 {{ $caducado ? 'text-danger' : 'text-muted' }}"></i>
                             <strong class="{{ $caducado ? 'text-danger' : ($urgente ? 'text-warning' : '') }}">
-                                Fin: {{ $call->end_date }}
+                                Fin: {{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
                             </strong>
                         </div>
 
                         <div>
-                            @if($a->status == 'pending')
+                            @if($caducado)
+                                <span class="badge bg-danger" style="font-size: 0.95rem; padding: 6px 14px;">Caducado</span>
+                            @elseif($a->status == 'pending')
                                 <span class="badge-pending" style="font-size: 0.95rem; padding: 6px 14px;">Pendiente</span>
                             @else
                                 <span class="badge-progress" style="font-size: 0.95rem; padding: 6px 14px;">En curso</span>

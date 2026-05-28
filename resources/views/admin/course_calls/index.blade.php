@@ -56,12 +56,12 @@
                                 <span class="badge bg-primary">Virtual</span>
                             @endif
                         </td>
-                        <td>{{ $call->start_date }}</td>
+                        <td>{{ \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') }}</td>
                         <td>
                             @if($call->end_date < now()->format('Y-m-d'))
-                                <span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}</span>
+                                <span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}</span>
                             @else
-                                {{ $call->end_date }}
+                                {{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
                             @endif
                         </td>
                         <td><span class="badge bg-secondary">7 · 3 · 1 días</span></td>

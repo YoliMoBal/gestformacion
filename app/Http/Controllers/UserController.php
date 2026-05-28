@@ -135,7 +135,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:admin,empleado',
+            'role' => 'required|in:admin,employee',
 
             'codigo_concesionario_id' => 'nullable|exists:codigos_concesionario,id',
             'departamento_id' => 'nullable|exists:departamentos,id',

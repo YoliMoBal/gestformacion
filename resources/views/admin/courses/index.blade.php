@@ -9,9 +9,30 @@
     </a>
 </div>
 
+<!-- BUSCADOR -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label">Buscar curso</label>
+                <input type="text" id="buscador" class="form-control" placeholder="Nombre del curso...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo</label>
+                <select id="filtro_tipo" class="form-select">
+                    <option value="">Todos los tipos</option>
+                    <option value="presencial">Presencial</option>
+                    <option value="e-learning">E-learning</option>
+                    <option value="virtual">Virtual</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
+        <table class="table table-hover mb-0" id="tabla_cursos">
             <thead>
                 <tr>
                     <th>Título</th>
@@ -57,4 +78,23 @@
     </div>
 </div>
 
+<script>
+function normalizar(t) {
+    return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+document.getElementById('buscador').addEventListener('input', filtrar);
+document.getElementById('filtro_tipo').addEventListener('change', filtrar);
+
+function filtrar() {
+    const texto = normalizar(document.getElementById('buscador').value);
+    const tipo = document.getElementById('filtro_tipo').value;
+    document.querySelectorAll('#tabla_cursos tbody tr').forEach(row => {
+        const nombre = normalizar(row.dataset.nombre || "");
+        const tipoCurso = row.dataset.tipo || "";
+        const matchTexto = !texto || nombre.includes(texto);
+        const matchTipo = !tipo || tipoCurso === tipo;
+        row.style.display = matchTexto && matchTipo ? "" : "none";
+    });
+}
+</script>
 @endsection

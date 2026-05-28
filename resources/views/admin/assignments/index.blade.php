@@ -31,6 +31,11 @@
                 </select>
             </div>
             <div class="col-md-3">
+                <label class="form-label">Buscar curso</label>
+                <input type="text" name="search_course" class="form-control"
+                    placeholder="Nombre del curso..." value="{{ request('search_course') }}">
+            </div>
+            <div class="col-md-3">
                 <label class="form-label">Estado</label>
                 <select name="estado" class="form-select">
                     <option value="">Todos</option>
@@ -101,18 +106,18 @@
                         @endif
                         @endif
                     </td>
-                    <td>{{ $call?->start_date ?? '-' }}</td>
+                    <td>{{ $call ? \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') : '-' }}</td>
                     <td>
                         @if($caducado)
                         <span class="text-danger fw-bold">
-                            <i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
                         </span>
                         @elseif($urgente)
                         <span class="fw-bold" style="color:#92400e;">
-                            <i class="fas fa-clock me-1"></i>{{ $call->end_date }}
+                            <i class="fas fa-clock me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
                         </span>
                         @else
-                        {{ $call?->end_date ?? '-' }}
+                        {{ $call ? \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') : '-' }}
                         @endif
                     </td>
                     <td>
