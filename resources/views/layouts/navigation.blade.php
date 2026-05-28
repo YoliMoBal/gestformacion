@@ -39,9 +39,6 @@
                 <span class="nav-badge">{{ auth()->user()->unreadNotifications->count() }}</span>
                 @endif
             </a>
-            <a href="{{ route('dashboard') }}" class="nav-link-custom {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="fas fa-user me-1"></i>Mis cursos
-            </a>
             @else
             <a href="{{ route('dashboard') }}" class="nav-link-custom {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 @php
@@ -112,9 +109,6 @@
             </a>
             <a href="{{ route('notifications.index') }}" class="nav-link-custom d-block py-2">
                 <i class="fas fa-bell me-2"></i>Notificaciones
-            </a>
-            <a href="{{ route('dashboard') }}" class="nav-link-custom d-block py-2">
-                <i class="fas fa-user me-2"></i>Mis cursos
             </a>
             @else
             <a href="{{ route('dashboard') }}" class="nav-link-custom d-block py-2">
