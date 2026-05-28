@@ -89,18 +89,18 @@
                 <tr class="{{ $a->status == 'completed' ? 'table-success' : ($caducado ? 'table-danger' : ($urgente ? 'table-warning' : '')) }}">
                     <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
                     <td>{{ $course?->title ?? '-' }}</td>
-                    <td>{{ $call?->start_date ?? '-' }}</td>
+                    <td>{{ $call ? \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') : '-' }}</td>
                     <td>
                         @if($caducado)
                         <span class="text-danger fw-bold">
-                            <i class="fas fa-exclamation-circle me-1"></i>{{ $call->end_date }}
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
                         </span>
                         @elseif($urgente)
                         <span class="fw-bold" style="color:#92400e;">
-                            <i class="fas fa-clock me-1"></i>{{ $call->end_date }}
+                            <i class="fas fa-clock me-1"></i>{{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }}
                         </span>
                         @else
-                        {{ $call?->end_date ?? '-' }}
+                        {{ $call ? \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') : '-' }}
                         @endif
                     </td>
                     <td>

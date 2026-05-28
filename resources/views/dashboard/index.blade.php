@@ -18,8 +18,8 @@
             @php
                 $call = $a->courseCall;
                 $course = $call->course;
-                $caducado = \Carbon\Carbon::parse($call->end_date)->lt(now());
-                $urgente = !$caducado && \Carbon\Carbon::parse($call->end_date)->lte(now()->addDays(7));
+                $caducado = \Carbon\Carbon::parse($call->end_date)->lt(now()->startOfDay());
+                $urgente = !$caducado && \Carbon\Carbon::parse($call->end_date)->lte(now()->startOfDay()->addDays(7));
             @endphp
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100" style="border-left: 4px solid {{ $caducado ? '#dc2626' : ($urgente ? '#f59e0b' : '#2E6DA4') }};">

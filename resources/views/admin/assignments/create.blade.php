@@ -53,7 +53,7 @@
                     <option value="{{ $call->id }}"
                         data-texto="{{ strtolower($call->course->title) }}">
                         {{ $call->course->title }}
-                        ({{ $call->start_date }} — {{ $call->end_date }})
+                        ({{ \Carbon\Carbon::parse($call->start_date)->format('d/m/Y') }} — {{ \Carbon\Carbon::parse($call->end_date)->format('d/m/Y') }})
                     </option>
                     @endforeach
                 </select>

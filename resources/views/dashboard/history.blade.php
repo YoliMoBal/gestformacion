@@ -70,8 +70,8 @@
                                     <span class="badge bg-primary" style="font-size: 0.95rem; padding: 6px 14px;">Virtual</span>
                                 @endif
                             </td>
-                            <td style="font-size: 1rem;">{{ $a->courseCall->start_date }}</td>
-                            <td style="font-size: 1rem;">{{ $a->courseCall->end_date }}</td>
+                            <td style="font-size: 1rem;">{{ \Carbon\Carbon::parse($a->courseCall->start_date)->format('d/m/Y') }}</td>
+                            <td style="font-size: 1rem;">{{ \Carbon\Carbon::parse($a->courseCall->end_date)->format('d/m/Y') }}</td>
                             <td><span class="badge-completed" style="font-size: 0.95rem; padding: 6px 14px;"><i class="fas fa-check me-1"></i>Completado</span></td>
                         </tr>
                     @endforeach

@@ -74,7 +74,7 @@
                             <tr>
                                 <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
                                 <td>{{ $a->courseCall->course->title }}</td>
-                                <td><span class="text-danger fw-bold"><i class="fas fa-clock me-1"></i>{{ $a->courseCall->end_date }}</span></td>
+                                <td><span class="text-danger fw-bold"><i class="fas fa-clock me-1"></i>{{ \Carbon\Carbon::parse($a->courseCall->end_date)->format('d/m/Y') }}</span></td>
                                 <td>
                                     @if($a->status == 'pending')
                                         <span class="badge-pending">Pendiente</span>
@@ -116,7 +116,7 @@
                             <tr>
                                 <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
                                 <td>{{ $a->courseCall->course->title }}</td>
-                                <td>{{ $a->courseCall->end_date }}</td>
+                                <td>{{ \Carbon\Carbon::parse($a->courseCall->end_date)->format('d/m/Y') }}</td>
                                 <td><span class="badge-completed"><i class="fas fa-check me-1"></i>Completado</span></td>
                             </tr>
                         @endforeach
@@ -151,7 +151,7 @@
                             <tr>
                                 <td><i class="fas fa-user me-2 text-muted"></i>{{ $a->user->name }}</td>
                                 <td>{{ $a->courseCall->course->title }}</td>
-                                <td><span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ $a->courseCall->end_date }}</span></td>
+                                <td><span class="text-danger fw-bold"><i class="fas fa-exclamation-circle me-1"></i>{{ \Carbon\Carbon::parse($a->courseCall->end_date)->format('d/m/Y') }}</span></td>
                                 <td>
                                     @if($a->status == 'pending')
                                         <span class="badge-pending">Pendiente</span>
