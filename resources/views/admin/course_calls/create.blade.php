@@ -53,11 +53,11 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Fecha inicio</label>
-                        <input type="date" name="start_date" id="start_date" class="form-control">
+                        <input type="date" id="start_date_elearning" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Fecha límite (plazo)</label>
-                        <input type="date" name="end_date" id="end_date" class="form-control">
+                        <input type="date" id="end_date_elearning" class="form-control">
                     </div>
                 </div>
             </div>
@@ -78,7 +78,6 @@
                         <label class="form-label">Fecha fin (calculada)</label>
                         <input type="date" name="end_date_presencial" id="end_date_presencial"
                             class="form-control" readonly style="background:#f8f9fa;">
-                        <input type="hidden" name="end_date" id="end_date_hidden">
                     </div>
                 </div>
 
@@ -165,6 +164,10 @@
                 </div>
             </div>
 
+            <!-- Hidden fields - se rellenan por JS según tipo -->
+            <input type="hidden" name="end_date" id="end_date_hidden">
+            <input type="hidden" name="start_date" id="start_date_hidden">
+
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save me-2"></i>Guardar convocatoria
@@ -231,6 +234,14 @@ function toggleAviso() {
 
 document.getElementById('course_id').addEventListener('change', actualizarCampos);
 actualizarCampos();
+
+// Sincronizar campos e-learning visibles con los hidden
+document.getElementById('start_date_elearning').addEventListener('change', function() {
+    document.getElementById('start_date_hidden').value = this.value;
+});
+document.getElementById('end_date_elearning').addEventListener('change', function() {
+    document.getElementById('end_date_hidden').value = this.value;
+});
 </script>
 
 @endsection
